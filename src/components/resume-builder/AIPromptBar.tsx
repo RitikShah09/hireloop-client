@@ -47,7 +47,7 @@ export const AIPromptBar = ({
         onChange={(e) => setPrompt(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && prompt.trim() && enhance()}
         placeholder={placeholder}
-        className="focus:ring-primary flex-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+        className="focus:ring-primary border-border bg-muted text-foreground placeholder:text-muted-foreground flex-1 rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
       />
       <button
         onClick={() => enhance()}

@@ -123,15 +123,18 @@ export default function CreateCVModal({ onComplete, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-gray-700 bg-gray-900">
-        <div className="flex items-start justify-between border-b border-gray-700 p-6">
+      <div className="border-border bg-surface w-full max-w-lg rounded-2xl border">
+        <div className="border-border flex items-start justify-between border-b p-6">
           <div>
-            <h2 className="text-lg font-semibold text-white">Create your Resume</h2>
-            <p className="mt-0.5 text-sm text-gray-400">
+            <h2 className="text-foreground text-lg font-semibold">Create your Resume</h2>
+            <p className="text-muted-foreground mt-0.5 text-sm">
               Go with the option that fits best for you
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-400 transition hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground transition"
+          >
             <X size={20} />
           </button>
         </div>
@@ -142,40 +145,42 @@ export default function CreateCVModal({ onComplete, onClose }: Props) {
             <div className="space-y-3">
               <button
                 onClick={() => setStep('upload')}
-                className="hover:bg-gray-750 hover:border-primary flex w-full items-center gap-4 rounded-xl border border-gray-700 bg-gray-800 p-4 text-left transition"
+                className="hover:border-primary border-border bg-surface-raised hover:bg-muted flex w-full items-center gap-4 rounded-xl border p-4 text-left transition"
               >
                 <div className="bg-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
                   <FileText size={20} className="text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium text-white">Upload your Resume</p>
-                  <p className="text-sm text-gray-400">Pick a resume from your device</p>
+                  <p className="text-foreground font-medium">Upload your Resume</p>
+                  <p className="text-muted-foreground text-sm">Pick a resume from your device</p>
                 </div>
               </button>
 
               <button
                 onClick={() => setStep('prompt')}
-                className="hover:bg-gray-750 hover:border-primary flex w-full items-center gap-4 rounded-xl border border-gray-700 bg-gray-800 p-4 text-left transition"
+                className="hover:border-primary border-border bg-surface-raised hover:bg-muted flex w-full items-center gap-4 rounded-xl border p-4 text-left transition"
               >
                 <div className="bg-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
                   <Sparkles size={20} className="text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium text-white">Start with AI Prompt</p>
-                  <p className="text-sm text-gray-400">Give a prompt to AI for your resume</p>
+                  <p className="text-foreground font-medium">Start with AI Prompt</p>
+                  <p className="text-muted-foreground text-sm">
+                    Give a prompt to AI for your resume
+                  </p>
                 </div>
               </button>
 
               <button
                 onClick={() => onComplete(defaultState)}
-                className="hover:bg-gray-750 hover:border-primary flex w-full items-center gap-4 rounded-xl border border-gray-700 bg-gray-800 p-4 text-left transition"
+                className="hover:border-primary border-border bg-surface-raised hover:bg-muted flex w-full items-center gap-4 rounded-xl border p-4 text-left transition"
               >
                 <div className="bg-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
                   <Upload size={20} className="text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium text-white">Start from Scratch</p>
-                  <p className="text-sm text-gray-400">Fill in your details manually</p>
+                  <p className="text-foreground font-medium">Start from Scratch</p>
+                  <p className="text-muted-foreground text-sm">Fill in your details manually</p>
                 </div>
               </button>
             </div>
@@ -187,23 +192,25 @@ export default function CreateCVModal({ onComplete, onClose }: Props) {
               <div
                 onClick={() => fileRef.current?.click()}
                 className={`mb-4 cursor-pointer rounded-xl border-2 border-dashed p-10 text-center transition ${
-                  file ? 'border-primary bg-primary-light' : 'hover:border-primary border-gray-600'
+                  file ? 'border-primary bg-primary-light' : 'border-border hover:border-primary'
                 }`}
               >
                 {file ? (
                   <div>
                     <FileText size={28} className="text-primary mx-auto mb-2" />
-                    <p className="font-medium text-white">{file.name}</p>
-                    <p className="text-xs text-gray-400">{(file.size / 1024).toFixed(0)} KB</p>
+                    <p className="text-foreground font-medium">{file.name}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {(file.size / 1024).toFixed(0)} KB
+                    </p>
                   </div>
                 ) : (
                   <div>
-                    <Upload size={28} className="mx-auto mb-2 text-gray-500" />
+                    <Upload size={28} className="text-muted-foreground mx-auto mb-2" />
                     <p className="text-primary text-sm">
                       <span className="cursor-pointer underline">Upload a file</span> or drag and
                       drop
                     </p>
-                    <p className="mt-1 text-xs text-gray-500">.pdf and .docx up to 5MB</p>
+                    <p className="text-muted-foreground mt-1 text-xs">.pdf and .docx up to 5MB</p>
                   </div>
                 )}
                 <input
@@ -220,11 +227,11 @@ export default function CreateCVModal({ onComplete, onClose }: Props) {
 
               {/* Show file name if uploaded */}
               {file && (
-                <div className="mb-4 flex items-center gap-3 rounded-lg bg-gray-800 p-3">
+                <div className="bg-muted mb-4 flex items-center gap-3 rounded-lg p-3">
                   <FileText size={18} className="text-primary" />
                   <div>
                     <p className="text-sm font-medium text-white">New Resume</p>
-                    <p className="text-xs text-gray-400">{file.name}</p>
+                    <p className="text-muted-foreground text-xs">{file.name}</p>
                   </div>
                 </div>
               )}
@@ -232,7 +239,7 @@ export default function CreateCVModal({ onComplete, onClose }: Props) {
               <div className="flex justify-between">
                 <button
                   onClick={() => setStep('options')}
-                  className="flex items-center gap-2 rounded-lg border border-gray-600 px-4 py-2.5 text-sm text-gray-300 transition hover:bg-gray-800"
+                  className="border-border text-foreground hover:bg-muted flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm transition"
                 >
                   <ArrowLeft size={14} /> Previous
                 </button>
@@ -258,7 +265,7 @@ export default function CreateCVModal({ onComplete, onClose }: Props) {
           {/* Step: AI Prompt */}
           {step === 'prompt' && (
             <div>
-              <p className="mb-3 text-sm text-gray-400">
+              <p className="text-muted-foreground mb-3 text-sm">
                 We'll carefully craft your resume using the context you've provided.
               </p>
               <textarea
@@ -266,12 +273,12 @@ export default function CreateCVModal({ onComplete, onClose }: Props) {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Provide instructions to create your resume..."
                 rows={6}
-                className="focus:ring-primary w-full resize-none rounded-xl border border-gray-700 bg-gray-800 px-4 py-3 text-sm text-white placeholder-gray-500 focus:ring-2 focus:outline-none"
+                className="focus:ring-primary border-border bg-muted text-foreground placeholder:text-muted-foreground w-full resize-none rounded-xl border px-4 py-3 text-sm focus:ring-2 focus:outline-none"
               />
               <div className="mt-4 flex justify-between">
                 <button
                   onClick={() => setStep('options')}
-                  className="flex items-center gap-2 rounded-lg border border-gray-600 px-4 py-2.5 text-sm text-gray-300 transition hover:bg-gray-800"
+                  className="border-border text-foreground hover:bg-muted flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm transition"
                 >
                   <ArrowLeft size={14} /> Previous
                 </button>
