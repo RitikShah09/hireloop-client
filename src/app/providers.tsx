@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -8,19 +8,22 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { store, persistor } from '@/store';
 import { Toaster } from 'react-hot-toast';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      staleTime: 1000 * 60,
-      refetchOnWindowFocus: false,
-      gcTime: 1000 * 60 * 10,
-    },
-    mutations: { retry: 0 },
-  },
-});
-
 export function Providers({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 1,
+            staleTime: 1000 * 60,
+            refetchOnWindowFocus: false,
+            gcTime: 1000 * 60 * 10,
+          },
+          mutations: { retry: 0 },
+        },
+      })
+  );
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>

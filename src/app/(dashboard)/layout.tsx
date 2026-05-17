@@ -287,17 +287,25 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <Sidebar nav={nav} user={user} />
       </div>
 
-      {sidebarOpen && (
-        <>
-          <div
-            className="animate-fade-in fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px] lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-          <div className="animate-slide-in-right fixed inset-y-0 left-0 z-50 lg:hidden">
-            <Sidebar nav={nav} user={user} onClose={() => setSidebarOpen(false)} />
-          </div>
-        </>
-      )}
+      {/* Mobile overlay — always in DOM, fades in/out via opacity */}
+      <div
+        className={cn(
+          'fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:hidden',
+          'transition-opacity duration-300 ease-in-out',
+          sidebarOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+        )}
+        onClick={() => setSidebarOpen(false)}
+      />
+      {/* Mobile sidebar — always in DOM, slides in/out from left */}
+      <div
+        className={cn(
+          'fixed inset-y-0 left-0 z-50 lg:hidden',
+          'transition-transform duration-300 ease-in-out',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
+        <Sidebar nav={nav} user={user} onClose={() => setSidebarOpen(false)} />
+      </div>
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="border-border bg-surface flex shrink-0 items-center justify-between border-b px-5 py-3 sm:px-10 lg:hidden">

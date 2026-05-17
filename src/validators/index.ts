@@ -23,20 +23,71 @@ export const registerSchema = z
   .refine((d) => d.password === d.confirmPassword, {
     message: "Passwords don't match",
     path: ['confirmPassword'],
+  })
+  .refine((d) => d.role !== 'CANDIDATE' || (d.firstName && d.firstName.trim().length > 0), {
+    message: 'First name is required',
+    path: ['firstName'],
+  })
+  .refine((d) => d.role !== 'CANDIDATE' || (d.lastName && d.lastName.trim().length > 0), {
+    message: 'Last name is required',
+    path: ['lastName'],
+  })
+  .refine((d) => d.role !== 'COMPANY' || (d.companyName && d.companyName.trim().length > 0), {
+    message: 'Company name is required',
+    path: ['companyName'],
   });
 
-export const createJobSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters').max(100),
-  description: z.string().min(50, 'Description must be at least 50 characters'),
-  location: z.string().optional(),
-  isRemote: z.boolean().default(false),
-  salaryMin: z.string().optional(),
-  salaryMax: z.string().optional(),
-  experienceMin: z.string().optional(),
-  experienceMax: z.string().optional(),
-  closingDate: z.string().optional(),
-  status: z.enum(['DRAFT', 'ACTIVE']).default('ACTIVE'),
-});
+const optionalPositiveNum = z
+  .string()
+  .optional()
+  .refine((v) => !v || (!isNaN(Number(v)) && Number(v) > 0), {
+    message: 'Must be a positive number',
+  });
+
+const optionalNonNegNum = z
+  .string()
+  .optional()
+  .refine((v) => !v || (!isNaN(Number(v)) && Number(v) >= 0), {
+    message: 'Cannot be negative',
+  });
+
+export const createJobSchema = z
+  .object({
+    title: z
+      .string()
+      .min(3, 'Title must be at least 3 characters')
+      .max(100, 'Title must be under 100 characters'),
+    description: z.string().min(50, 'Description must be at least 50 characters'),
+    location: z.string().optional(),
+    isRemote: z.boolean().default(false),
+    salaryMin: optionalPositiveNum,
+    salaryMax: optionalPositiveNum,
+    experienceMin: optionalNonNegNum,
+    experienceMax: optionalNonNegNum,
+
+    closingDate: z
+      .string()
+      .optional()
+      .refine((v) => !v || !isNaN(new Date(v).getTime()), { message: 'Invalid date' })
+      .refine((v) => !v || new Date(v) > new Date(), {
+        message: 'Closing date must be in the future',
+      }),
+    status: z.enum(['DRAFT', 'ACTIVE']).default('ACTIVE'),
+  })
+  .refine(
+    (d) => {
+      if (!d.salaryMin || !d.salaryMax) return true;
+      return Number(d.salaryMin) <= Number(d.salaryMax);
+    },
+    { message: 'Min salary cannot exceed max salary', path: ['salaryMax'] }
+  )
+  .refine(
+    (d) => {
+      if (!d.experienceMin || !d.experienceMax) return true;
+      return Number(d.experienceMin) <= Number(d.experienceMax);
+    },
+    { message: 'Min experience cannot exceed max experience', path: ['experienceMax'] }
+  );
 
 export const candidateProfileSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),

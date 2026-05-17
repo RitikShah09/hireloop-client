@@ -70,13 +70,14 @@ export default function NewJobPage() {
         description: data.description,
         requirements,
         skills,
-        location: data.location,
+        location: data.location || undefined,
         isRemote: data.isRemote,
         salaryMin: data.salaryMin ? parseInt(data.salaryMin) : undefined,
         salaryMax: data.salaryMax ? parseInt(data.salaryMax) : undefined,
         experienceMin: data.experienceMin ? parseInt(data.experienceMin) : undefined,
         experienceMax: data.experienceMax ? parseInt(data.experienceMax) : undefined,
-        closingDate: data.closingDate || undefined,
+
+        closingDate: data.closingDate ? new Date(data.closingDate).toISOString() : undefined,
         status: data.status,
       },
       { onSuccess: () => router.push('/jobs') }
@@ -159,12 +160,16 @@ export default function NewJobPage() {
                 label="Min Salary (₹/year)"
                 type="number"
                 placeholder="800000"
+                min="0"
+                error={errors.salaryMin?.message}
                 {...register('salaryMin')}
               />
               <Input
                 label="Max Salary (₹/year)"
                 type="number"
                 placeholder="1500000"
+                min="0"
+                error={errors.salaryMax?.message}
                 {...register('salaryMax')}
               />
             </div>
@@ -173,18 +178,30 @@ export default function NewJobPage() {
                 label="Min Experience (years)"
                 type="number"
                 placeholder="2"
+                min="0"
+                error={errors.experienceMin?.message}
                 {...register('experienceMin')}
               />
               <Input
                 label="Max Experience (years)"
                 type="number"
                 placeholder="5"
+                min="0"
+                error={errors.experienceMax?.message}
                 {...register('experienceMax')}
               />
             </div>
             <div>
               <label className="label">Application Closing Date</label>
-              <input {...register('closingDate')} type="datetime-local" className="input w-auto" />
+              <input
+                {...register('closingDate')}
+                type="datetime-local"
+                className="input w-auto"
+                min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
+              />
+              {errors.closingDate && (
+                <p className="form-error mt-1">{errors.closingDate.message}</p>
+              )}
             </div>
           </div>
         </Card>

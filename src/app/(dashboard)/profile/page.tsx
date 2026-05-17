@@ -68,7 +68,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
 function CandidateProfileForm() {
-  const { data, isLoading } = useCandidateProfile();
+  const { data, isPending: isLoadingProfile, isError, refetch } = useCandidateProfile();
   const { mutate: update, isPending } = useUpdateCandidateProfile();
   const qc = useQueryClient();
   const avatarRef = useRef<HTMLInputElement>(null);
@@ -77,27 +77,22 @@ function CandidateProfileForm() {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<CandidateProfileFormData>({
     resolver: zodResolver(candidateProfileSchema),
-  });
 
-  useEffect(() => {
-    if (profile) {
-      reset({
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        phone: profile.phone || '',
-        location: profile.location || '',
-        bio: profile.bio || '',
-        skills: profile.skills?.join(', ') || '',
-        linkedinUrl: profile.linkedinUrl || '',
-        githubUrl: profile.githubUrl || '',
-        portfolioUrl: profile.portfolioUrl || '',
-      });
-    }
-  }, [profile, reset]);
+    values: {
+      firstName: profile?.firstName ?? '',
+      lastName: profile?.lastName ?? '',
+      phone: profile?.phone ?? '',
+      location: profile?.location ?? '',
+      bio: profile?.bio ?? '',
+      skills: profile?.skills?.join(', ') ?? '',
+      linkedinUrl: profile?.linkedinUrl ?? '',
+      githubUrl: profile?.githubUrl ?? '',
+      portfolioUrl: profile?.portfolioUrl ?? '',
+    },
+  });
 
   const { mutate: uploadAvatar, isPending: uploadingAvatar } = useMutation({
     mutationFn: (file: File) => profileApi.uploadAvatar(file),
@@ -119,13 +114,28 @@ function CandidateProfileForm() {
     });
   };
 
-  if (isLoading)
+  if (isLoadingProfile)
     return (
       <div className="space-y-4">
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} className="h-32 rounded-lg" />
         ))}
       </div>
+    );
+
+  if (isError)
+    return (
+      <Card>
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <p className="text-foreground font-medium">Failed to load profile</p>
+          <p className="text-muted-foreground text-sm">
+            There was an error fetching your profile. Please try again.
+          </p>
+          <Button variant="secondary" size="sm" onClick={() => refetch()}>
+            Retry
+          </Button>
+        </div>
+      </Card>
     );
 
   return (
@@ -1096,7 +1106,7 @@ function MilestoneSection() {
 }
 
 function CompanyProfileForm() {
-  const { data, isLoading } = useCompanyProfile();
+  const { data, isPending: isLoadingProfile } = useCompanyProfile();
   const { mutate: update, isPending } = useUpdateCompanyProfile();
   const qc = useQueryClient();
   const logoRef = useRef<HTMLInputElement>(null);
@@ -1105,25 +1115,20 @@ function CompanyProfileForm() {
   const {
     register,
     handleSubmit,
-    reset,
     watch,
     setValue,
     formState: { errors },
   } = useForm<CompanyProfileFormData>({
     resolver: zodResolver(companyProfileSchema),
+    values: {
+      name: profile?.name ?? '',
+      description: profile?.description ?? '',
+      website: profile?.website ?? '',
+      industry: profile?.industry ?? '',
+      size: profile?.size ?? '',
+      location: profile?.location ?? '',
+    },
   });
-  useEffect(() => {
-    if (profile) {
-      reset({
-        name: profile.name,
-        description: profile.description || '',
-        website: profile.website || '',
-        industry: profile.industry || '',
-        size: profile.size || '',
-        location: profile.location || '',
-      });
-    }
-  }, [profile, reset]);
 
   const { mutate: uploadLogo, isPending: uploadingLogo } = useMutation({
     mutationFn: (file: File) => profileApi.uploadLogo(file),
@@ -1133,7 +1138,7 @@ function CompanyProfileForm() {
     },
   });
 
-  if (isLoading)
+  if (isLoadingProfile)
     return (
       <div className="space-y-4">
         {Array.from({ length: 2 }).map((_, i) => (
@@ -1277,7 +1282,7 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-2xl space-y-5">
       <PageHeader title="My Profile" description="Manage your professional information" />
 
-      <div className="bg-muted flex gap-1 rounded-lg p-1 overflow-x-auto">
+      <div className="bg-muted flex gap-1 overflow-x-auto rounded-lg p-1">
         {candidateTabs.map((tab) => (
           <button
             key={tab.id}

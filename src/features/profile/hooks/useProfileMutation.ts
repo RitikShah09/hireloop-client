@@ -14,8 +14,11 @@ export const useUpdateCandidateProfile = () => {
       qc.setQueryData(
         queryKeys.profile.candidate,
         (old: ApiResponse<CandidateProfile> | undefined) => {
-          if (!old?.data) return old;
-          return { ...old, data: { ...old.data, ...updated } };
+          if (old?.data) {
+            return { ...old, data: { ...old.data, ...updated } };
+          }
+
+          return { success: true, message: 'Profile fetched', data: updated };
         }
       );
       toast.success('Profile updated');
@@ -31,8 +34,10 @@ export const useUpdateCompanyProfile = () => {
     onSuccess: (res) => {
       const updated = res.data.data as CompanyProfile;
       qc.setQueryData(queryKeys.profile.company, (old: ApiResponse<CompanyProfile> | undefined) => {
-        if (!old?.data) return old;
-        return { ...old, data: { ...old.data, ...updated } };
+        if (old?.data) {
+          return { ...old, data: { ...old.data, ...updated } };
+        }
+        return { success: true, message: 'Company profile fetched', data: updated };
       });
       toast.success('Company profile updated');
     },
