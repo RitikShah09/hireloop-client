@@ -1277,7 +1277,7 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-2xl space-y-5">
       <PageHeader title="My Profile" description="Manage your professional information" />
 
-      <div className="bg-muted flex w-fit gap-1 rounded-lg p-1">
+      <div className="bg-muted flex gap-1 rounded-lg p-1 overflow-x-auto">
         {candidateTabs.map((tab) => (
           <button
             key={tab.id}
