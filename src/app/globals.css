@@ -1,0 +1,378 @@
+@import 'tailwindcss';
+
+:root {
+  --background: 0 0% 99%;
+  --surface: 0 0% 100%;
+  --surface-raised: 210 20% 98%;
+
+  --foreground: 220 20% 10%;
+  --foreground-muted: 220 10% 45%;
+  --foreground-subtle: 220 8% 65%;
+
+  --border: 220 14% 90%;
+  --border-strong: 220 14% 80%;
+
+  --primary: 217 91% 50%;
+  --primary-hover: 217 91% 43%;
+  --primary-light: 217 91% 96%;
+  --primary-muted: 217 75% 91%;
+  --primary-foreground: 0 0% 100%;
+
+  --success: 160 60% 38%;
+  --success-light: 160 60% 95%;
+  --warning: 38 92% 50%;
+  --warning-light: 38 100% 95%;
+  --danger: 0 72% 51%;
+  --danger-light: 0 86% 97%;
+  --info: 199 89% 48%;
+  --info-light: 199 100% 95%;
+
+  --sidebar-bg: 0 0% 100%;
+  --sidebar-width: 15rem;
+
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-micro: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-surface: hsl(var(--surface));
+  --color-surface-raised: hsl(var(--surface-raised));
+
+  --color-foreground: hsl(var(--foreground));
+  --color-foreground-muted: hsl(var(--foreground-muted));
+  --color-foreground-subtle: hsl(var(--foreground-subtle));
+
+  --color-border: hsl(var(--border));
+  --color-border-strong: hsl(var(--border-strong));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-hover: hsl(var(--primary-hover));
+  --color-primary-light: hsl(var(--primary-light));
+  --color-primary-muted: hsl(var(--primary-muted));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-muted: hsl(var(--surface-raised));
+  --color-muted-foreground: hsl(var(--foreground-muted));
+
+  --color-success: hsl(var(--success));
+  --color-success-light: hsl(var(--success-light));
+  --color-warning: hsl(var(--warning));
+  --color-warning-light: hsl(var(--warning-light));
+  --color-danger: hsl(var(--danger));
+  --color-danger-light: hsl(var(--danger-light));
+  --color-info: hsl(var(--info));
+  --color-info-light: hsl(var(--info-light));
+}
+
+@theme {
+  --font-sans: 'Inter', 'Geist', system-ui, -apple-system, sans-serif;
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-fade-in: fade-in 0.2s ease;
+  --animate-scale-in: scale-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-slide-up: slide-up 0.2s ease;
+  --animate-shimmer: shimmer 1.5s infinite linear;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    @apply border-border box-border;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  html {
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+    line-height: 1.25;
+  }
+
+  *:focus-visible {
+    @apply ring-primary ring-2 ring-offset-2 outline-none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: hsl(var(--border-strong));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground-subtle));
+  }
+}
+
+@layer utilities {
+  .text-muted {
+    color: hsl(var(--foreground-muted));
+  }
+  .text-subtle {
+    color: hsl(var(--foreground-subtle));
+  }
+
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  .transition-micro {
+    transition: var(--transition-micro);
+  }
+  .transition-spring {
+    transition: var(--transition-spring);
+  }
+
+  .interactive {
+    transition: var(--transition-smooth);
+    @apply cursor-pointer select-none;
+  }
+  .interactive:hover {
+    @apply bg-muted;
+  }
+  .interactive:active {
+    @apply scale-[0.98];
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-from-right 0.25s ease;
+  }
+  .animate-slide-in-top {
+    animation: slide-in-from-top 0.2s ease;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border-border rounded-lg border;
+  }
+  .card-hover {
+    @apply bg-surface border-border hover:border-border-strong hover:bg-muted rounded-lg border;
+    transition: var(--transition-smooth);
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-primary {
+    @apply bg-primary-muted text-primary inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-success {
+    @apply bg-success-light text-success inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-warning {
+    @apply bg-warning-light text-warning inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-danger {
+    @apply bg-danger-light text-danger inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-neutral {
+    @apply bg-muted text-muted-foreground inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-info {
+    @apply bg-info-light text-info inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium;
+  }
+
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded font-medium select-none;
+    @apply focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
+    @apply disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50;
+    transition: var(--transition-smooth);
+  }
+  .btn-sm {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded font-medium select-none;
+    @apply focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
+    @apply disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50;
+    @apply h-7 px-3 py-1.5 text-xs;
+    transition: var(--transition-smooth);
+  }
+  .btn-md {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded font-medium select-none;
+    @apply focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
+    @apply disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50;
+    @apply h-9 px-4 py-2 text-sm;
+    transition: var(--transition-smooth);
+  }
+  .btn-lg {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded font-medium select-none;
+    @apply focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
+    @apply disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50;
+    @apply h-10 px-5 py-2.5 text-sm;
+    transition: var(--transition-smooth);
+  }
+  .btn-xl {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded font-medium select-none;
+    @apply focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
+    @apply disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50;
+    @apply h-12 px-6 py-3 text-base;
+    transition: var(--transition-smooth);
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-hover focus-visible:ring-primary text-white active:scale-[0.98];
+  }
+  .btn-secondary {
+    @apply bg-muted text-foreground border-border hover:bg-border border active:scale-[0.98];
+  }
+  .btn-ghost {
+    @apply text-muted-foreground hover:bg-muted hover:text-foreground active:scale-[0.98];
+  }
+  .btn-danger {
+    @apply bg-danger-light text-danger hover:bg-danger hover:text-white active:scale-[0.98];
+  }
+  .btn-outline {
+    @apply border-border text-foreground hover:bg-muted border bg-transparent active:scale-[0.98];
+  }
+
+  .input {
+    @apply bg-surface border-border w-full rounded border px-3.5 py-2.5 text-sm;
+    @apply text-foreground placeholder:text-foreground-subtle;
+    @apply focus:ring-primary focus:border-primary focus:ring-2 focus:outline-none;
+    @apply disabled:bg-muted disabled:text-foreground-subtle disabled:cursor-not-allowed;
+    transition: var(--transition-micro);
+  }
+  .input-error {
+    @apply border-danger focus:ring-danger;
+  }
+  .label {
+    @apply text-foreground mb-1.5 block text-sm font-medium;
+  }
+  .form-error {
+    @apply text-danger mt-1 text-xs;
+  }
+
+  .section-title {
+    @apply text-muted-foreground text-sm font-semibold tracking-wider uppercase;
+  }
+
+  .avatar {
+    @apply bg-primary-muted flex items-center justify-center rounded-full;
+    @apply text-primary shrink-0 overflow-hidden font-semibold;
+  }
+
+  .skeleton {
+    @apply bg-border animate-pulse rounded;
+  }
+
+  .nav-item {
+    @apply flex cursor-pointer items-center gap-3 rounded px-3 py-2 text-sm font-medium;
+    @apply text-muted-foreground hover:bg-muted hover:text-foreground;
+    transition: var(--transition-micro);
+  }
+  .nav-item-active {
+    @apply bg-primary-light text-primary;
+  }
+  .nav-item-active:hover {
+    @apply bg-primary-muted;
+  }
+
+  .notif-dot {
+    @apply bg-danger absolute -top-0.5 -right-0.5 h-4 w-4 text-white;
+    @apply flex items-center justify-center rounded-full text-[9px] leading-none font-bold;
+  }
+}
+
+@media (min-width: 1024px) {
+  .resume-builder-layout {
+    height: calc(100vh - 130px);
+    overflow: hidden;
+  }
+  .resume-builder-split {
+    overflow: hidden;
+  }
+  .resume-builder-editor {
+    overflow-y: auto;
+  }
+}
