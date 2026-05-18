@@ -137,63 +137,65 @@ function JobCard({
             )}
           </div>
 
-          <div className="border-border mt-4 flex items-center justify-between border-t pt-3">
-            {isCompany ? (
-              <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <Users size={13} />
-                {job._count?.applications || 0} applicants
-              </span>
-            ) : (
-              <span className="text-muted-foreground text-xs">
-                {job.experienceMin !== undefined
-                  ? `${job.experienceMin}–${job.experienceMax}y exp`
-                  : 'Any experience'}
-              </span>
-            )}
-
-            <div className="flex items-center gap-2">
+          <div className="border-border mt-4 border-t pt-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               {isCompany ? (
-                <>
-                  <Link href={`/jobs/${job.id}/candidates`}>
-                    <Button variant="outline" size="sm" leftIcon={<Eye size={12} />}>
-                      View Applicants
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() =>
-                      onToggleStatus?.(job.id, job.status === 'ACTIVE' ? 'CLOSED' : 'ACTIVE')
-                    }
-                  >
-                    {job.status === 'ACTIVE' ? 'Close' : 'Activate'}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDelete?.(job.id)}
-                    className="text-danger hover:text-danger hover:bg-danger/10 p-1.5"
-                  >
-                    <Trash2 size={13} />
-                  </Button>
-                </>
-              ) : alreadyApplied ? (
-                <>
-                  <span className="text-success flex items-center gap-1.5 text-xs font-medium">
-                    <CheckCircle size={13} />
-                    Applied
-                  </span>
-                  <Link href={`/jobs/${job.id}`}>
-                    <Button variant="outline" size="sm">
-                      View
-                    </Button>
-                  </Link>
-                </>
+                <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
+                  <Users size={13} />
+                  {job._count?.applications || 0} applicants
+                </span>
               ) : (
-                <Link href={`/jobs/${job.id}`}>
-                  <Button size="sm">View & Apply</Button>
-                </Link>
+                <span className="text-muted-foreground text-xs">
+                  {job.experienceMin !== undefined
+                    ? `${job.experienceMin}–${job.experienceMax}y exp`
+                    : 'Any experience'}
+                </span>
               )}
+
+              <div className="flex items-center gap-2">
+                {isCompany ? (
+                  <>
+                    <Link href={`/jobs/${job.id}/candidates`}>
+                      <Button variant="outline" size="sm" leftIcon={<Eye size={12} />}>
+                        <span className="hidden sm:inline">View </span>Applicants
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() =>
+                        onToggleStatus?.(job.id, job.status === 'ACTIVE' ? 'CLOSED' : 'ACTIVE')
+                      }
+                    >
+                      {job.status === 'ACTIVE' ? 'Close' : 'Activate'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete?.(job.id)}
+                      className="text-danger hover:text-danger hover:bg-danger/10 p-1.5"
+                    >
+                      <Trash2 size={13} />
+                    </Button>
+                  </>
+                ) : alreadyApplied ? (
+                  <>
+                    <span className="text-success flex items-center gap-1.5 text-xs font-medium">
+                      <CheckCircle size={13} />
+                      Applied
+                    </span>
+                    <Link href={`/jobs/${job.id}`}>
+                      <Button variant="outline" size="sm">
+                        View
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <Link href={`/jobs/${job.id}`}>
+                    <Button size="sm">View & Apply</Button>
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </div>
