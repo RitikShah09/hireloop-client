@@ -282,11 +282,12 @@ export default function JobsPage() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const activeTab = (searchParams.get('tab') as 'all' | 'suggested') || 'all';
+  const [activeTab, setActiveTabState] = useState<'all' | 'suggested'>(
+    (searchParams.get('tab') as 'all' | 'suggested') || 'all'
+  );
   const setActiveTab = (tab: 'all' | 'suggested') => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', tab);
-    router.replace(`${pathname}?${params.toString()}`);
+    setActiveTabState(tab);
+    router.replace(`${pathname}?tab=${tab}`, { scroll: false });
   };
 
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null);

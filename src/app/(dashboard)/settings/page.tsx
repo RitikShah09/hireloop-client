@@ -357,12 +357,13 @@ export default function SettingsPage() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const activeTab = (searchParams.get('tab') as Tab) || 'password';
+  const [activeTab, setActiveTab] = useState<Tab>(
+    (searchParams.get('tab') as Tab) || 'password'
+  );
 
   const setTab = (tab: Tab) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', tab);
-    router.replace(`${pathname}?${params.toString()}`);
+    setActiveTab(tab);
+    router.replace(`${pathname}?tab=${tab}`, { scroll: false });
   };
 
   return (
