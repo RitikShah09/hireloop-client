@@ -1212,7 +1212,7 @@ function ResumeBuilderTab() {
                         setLangInput('');
                       }
                     }}
-                    className="btn btn-sm btn-primary px-2.5 h-10.25"
+                    className="btn btn-sm btn-primary h-10.25 px-2.5"
                   >
                     <Plus size={14} />
                   </button>

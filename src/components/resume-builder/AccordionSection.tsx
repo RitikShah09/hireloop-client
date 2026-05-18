@@ -30,9 +30,7 @@ export const AccordionSection = ({ title, children, defaultOpen = false }: Props
         )}
       </button>
       {open && (
-        <div className="border-border bg-surface rounded-b border-t px-4 pt-2 pb-4">
-          {children}
-        </div>
+        <div className="border-border bg-surface rounded-b border-t px-4 pt-2 pb-4">{children}</div>
       )}
     </div>
   );

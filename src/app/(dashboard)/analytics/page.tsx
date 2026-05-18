@@ -94,7 +94,7 @@ export default function AnalyticsPage() {
         description="Your hiring pipeline performance at a glance"
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="xs:grid-cols-2 grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
         <StatCard
           label="Total Jobs"
           value={overview.totalJobs}

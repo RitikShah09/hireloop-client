@@ -357,9 +357,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [activeTab, setActiveTab] = useState<Tab>(
-    (searchParams.get('tab') as Tab) || 'password'
-  );
+  const [activeTab, setActiveTab] = useState<Tab>((searchParams.get('tab') as Tab) || 'password');
 
   const setTab = (tab: Tab) => {
     setActiveTab(tab);

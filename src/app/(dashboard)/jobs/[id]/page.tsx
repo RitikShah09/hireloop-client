@@ -283,7 +283,7 @@ export default function JobDetailPage() {
         <div className="space-y-5 lg:col-span-2">
           <Card>
             <h2 className="text-foreground mb-3 font-semibold">Job Description</h2>
-            <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap break-words">
+            <p className="text-muted-foreground text-sm leading-relaxed break-words whitespace-pre-wrap">
               {job.description}
             </p>
           </Card>

@@ -80,7 +80,7 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-4 xl:grid-cols-4">
+      <div className="xs:grid-cols-2 grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
         {statsLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="card space-y-2 p-5">
