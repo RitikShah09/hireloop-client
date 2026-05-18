@@ -34,6 +34,7 @@ import {
   EmptyState,
   Skeleton,
   ConfirmDialog,
+  CustomSelect,
 } from '@/components/ui';
 import { AccordionSection } from '@/components/resume-builder/AccordionSection';
 import { AIPromptBar } from '@/components/resume-builder/AIPromptBar';
@@ -392,12 +393,12 @@ const EditorInput = ({
   placeholder?: string;
 }) => (
   <div>
-    <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>
+    <label className="label">{label}</label>
     <input
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="focus:ring-primary focus:border-primary w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+      className="input bg-background"
     />
   </div>
 );
@@ -416,13 +417,13 @@ const EditorTextarea = ({
   rows?: number;
 }) => (
   <div>
-    {label && <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>}
+    {label && <label className="label">{label}</label>}
     <textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="focus:ring-primary w-full resize-none rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+      className="input bg-background resize-none"
     />
   </div>
 );
@@ -445,32 +446,20 @@ const DatePicker = ({
   const update = (nm: string, ny: string) => onChange(nm && ny ? `${nm} ${ny}` : '');
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>
-      <div className="flex gap-2">
-        <select
+      <label className="label">{label}</label>
+      <div className="grid grid-cols-2 gap-2">
+        <CustomSelect
+          placeholder="Month"
           value={m}
-          onChange={(e) => update(e.target.value, y)}
-          className="focus:ring-primary flex-1 rounded border border-gray-200 bg-gray-50 px-2 py-2 text-sm focus:ring-2 focus:outline-none"
-        >
-          <option value="">mm</option>
-          {MONTHS.map((mo) => (
-            <option key={mo} value={mo}>
-              {mo}
-            </option>
-          ))}
-        </select>
-        <select
+          onChange={(v) => update(v, y)}
+          options={MONTHS.map((mo) => ({ value: mo, label: mo }))}
+        />
+        <CustomSelect
+          placeholder="Year"
           value={y}
-          onChange={(e) => update(m, e.target.value)}
-          className="focus:ring-primary flex-1 rounded border border-gray-200 bg-gray-50 px-2 py-2 text-sm focus:ring-2 focus:outline-none"
-        >
-          <option value="">yyyy</option>
-          {YEARS.map((yr) => (
-            <option key={yr} value={yr}>
-              {yr}
-            </option>
-          ))}
-        </select>
+          onChange={(v) => update(m, v)}
+          options={YEARS.map((yr) => ({ value: yr, label: yr }))}
+        />
       </div>
     </div>
   );
@@ -487,22 +476,22 @@ const ItemCard = ({
 }) => {
   const [open, setOpen] = useState(true);
   return (
-    <div className="mb-2 overflow-hidden rounded border border-gray-200">
+    <div className="border-border mb-2 rounded border">
       <button
-        className="flex w-full items-center justify-between bg-gray-50 px-3 py-2.5 transition hover:bg-gray-100"
+        className={`bg-muted hover:bg-muted/80 flex w-full items-center justify-between px-3 py-2.5 transition ${open ? 'rounded-t-lg' : 'rounded-lg'}`}
         onClick={() => setOpen(!open)}
       >
-        <span className="truncate text-sm font-medium text-gray-700">{title}</span>
+        <span className="text-foreground truncate text-sm font-medium">{title}</span>
         {open ? (
-          <ChevronUp size={13} className="shrink-0 text-gray-400" />
+          <ChevronUp size={13} className="text-muted-foreground shrink-0" />
         ) : (
-          <ChevronDown size={13} className="shrink-0 text-gray-400" />
+          <ChevronDown size={13} className="text-muted-foreground shrink-0" />
         )}
       </button>
       {open && (
-        <div className="space-y-3 border-t border-gray-100 p-3">
+        <div className="border-border space-y-3 rounded-b border-t p-3">
           {children}
-          <button onClick={onRemove} className="text-xs text-red-400 hover:text-red-600">
+          <button onClick={onRemove} className="text-danger hover:text-danger/70 text-xs">
             Remove
           </button>
         </div>
@@ -511,10 +500,18 @@ const ItemCard = ({
   );
 };
 
-const AddBtn = ({ label, onClick }: { label: string; onClick: () => void }) => (
+const AddBtn = ({
+  label,
+  onClick,
+  className,
+}: {
+  label: string;
+  onClick: () => void;
+  className?: string;
+}) => (
   <button
     onClick={onClick}
-    className="text-primary border-primary/30 hover:bg-primary-light flex w-full items-center justify-center gap-1.5 rounded border border-dashed px-3 py-2 text-xs transition"
+    className={`${className}text-primary border-primary/30 hover:bg-primary-light flex w-full items-center justify-center gap-1.5 rounded border border-dashed px-3 py-2 text-xs transition`}
   >
     <Plus size={13} /> {label}
   </button>
@@ -956,77 +953,79 @@ function ResumeBuilderTab() {
         >
           <div className="resume-builder-editor space-y-1 pt-4 pb-8 sm:pr-5">
             <AccordionSection title="Personal Details" defaultOpen>
-              <p className="text-primary mb-2 text-[11px] font-semibold tracking-wide uppercase">
-                Basic Information
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                <EditorInput
-                  label="First Name"
-                  value={state.personalInfo.firstName}
-                  onChange={(v) => setP('firstName', v)}
-                  placeholder="John"
-                />
-                <EditorInput
-                  label="Last Name"
-                  value={state.personalInfo.lastName}
-                  onChange={(v) => setP('lastName', v)}
-                  placeholder="Doe"
-                />
-              </div>
-              <EditorInput
-                label="Job Title"
-                value={state.personalInfo.jobTitle}
-                onChange={(v) => setP('jobTitle', v)}
-                placeholder="Full Stack Developer"
-              />
-              <EditorInput
-                label="Email"
-                value={state.personalInfo.email}
-                onChange={(v) => setP('email', v)}
-                placeholder="john@gmail.com"
-              />
-              <EditorInput
-                label="Phone"
-                value={state.personalInfo.phone}
-                onChange={(v) => setP('phone', v)}
-                placeholder="+91 9876543210"
-              />
-              <p className="text-primary mt-3 mb-2 text-[11px] font-semibold tracking-wide uppercase">
-                Address
-              </p>
-              <EditorInput
-                label="City"
-                value={state.personalInfo.city}
-                onChange={(v) => setP('city', v)}
-                placeholder="Pune"
-              />
-              <EditorInput
-                label="State"
-                value={state.personalInfo.state}
-                onChange={(v) => setP('state', v)}
-                placeholder="Maharashtra"
-              />
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Country</label>
-                  <select
-                    value={state.personalInfo.country}
-                    onChange={(e) => setP('country', e.target.value)}
-                    className="focus:ring-primary w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
-                  >
-                    {['India', 'USA', 'UK', 'Canada', 'Australia', 'Germany', 'Singapore'].map(
-                      (c) => (
-                        <option key={c}>{c}</option>
-                      )
-                    )}
-                  </select>
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-xs font-medium">Basic Information</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <EditorInput
+                    label="First Name"
+                    value={state.personalInfo.firstName}
+                    onChange={(v) => setP('firstName', v)}
+                    placeholder="John"
+                  />
+                  <EditorInput
+                    label="Last Name"
+                    value={state.personalInfo.lastName}
+                    onChange={(v) => setP('lastName', v)}
+                    placeholder="Doe"
+                  />
                 </div>
                 <EditorInput
-                  label="Zip Code"
-                  value={state.personalInfo.zipCode}
-                  onChange={(v) => setP('zipCode', v)}
-                  placeholder="411047"
+                  label="Job Title"
+                  value={state.personalInfo.jobTitle}
+                  onChange={(v) => setP('jobTitle', v)}
+                  placeholder="Full Stack Developer"
                 />
+                <EditorInput
+                  label="Email"
+                  value={state.personalInfo.email}
+                  onChange={(v) => setP('email', v)}
+                  placeholder="john@gmail.com"
+                />
+                <EditorInput
+                  label="Phone"
+                  value={state.personalInfo.phone}
+                  onChange={(v) => setP('phone', v)}
+                  placeholder="+91 9876543210"
+                />
+                <div className="border-border border-t pt-1">
+                  <p className="text-muted-foreground mb-3 text-xs font-medium">Address</p>
+                  <div className="space-y-3">
+                    <EditorInput
+                      label="City"
+                      value={state.personalInfo.city}
+                      onChange={(v) => setP('city', v)}
+                      placeholder="Pune"
+                    />
+                    <EditorInput
+                      label="State"
+                      value={state.personalInfo.state}
+                      onChange={(v) => setP('state', v)}
+                      placeholder="Maharashtra"
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <CustomSelect
+                        label="Country"
+                        value={state.personalInfo.country}
+                        onChange={(v) => setP('country', v)}
+                        options={[
+                          'India',
+                          'USA',
+                          'UK',
+                          'Canada',
+                          'Australia',
+                          'Germany',
+                          'Singapore',
+                        ].map((c) => ({ value: c, label: c }))}
+                      />
+                      <EditorInput
+                        label="Zip Code"
+                        value={state.personalInfo.zipCode}
+                        onChange={(v) => setP('zipCode', v)}
+                        placeholder="411047"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </AccordionSection>
 
@@ -1034,14 +1033,12 @@ function ResumeBuilderTab() {
               <div className="space-y-3">
                 {state.socialLinks.map((link) => (
                   <div key={link.id}>
-                    <label className="mb-1 block text-xs font-medium text-gray-600">
-                      {link.label}
-                    </label>
+                    <label className="label">{link.label}</label>
                     <input
                       value={link.url}
                       onChange={(e) => updLink(link.id, e.target.value)}
                       placeholder={`https://${link.label.toLowerCase()}.com/...`}
-                      className="focus:ring-primary w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+                      className="input bg-background"
                     />
                   </div>
                 ))}
@@ -1094,7 +1091,7 @@ function ResumeBuilderTab() {
                     onChange={(v) => updExp(exp.id, 'jobTitle', v)}
                     placeholder="MERN Stack Developer"
                   />
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-3">
                     <DatePicker
                       label="Start Date"
                       value={exp.startDate}
@@ -1106,7 +1103,7 @@ function ResumeBuilderTab() {
                       onChange={(v) => updExp(exp.id, 'endDate', v)}
                     />
                   </div>
-                  <label className="flex cursor-pointer items-center gap-2 text-xs text-gray-600">
+                  <label className="text-muted-foreground flex cursor-pointer items-center gap-2 text-xs">
                     <input
                       type="checkbox"
                       checked={exp.isCurrent}
@@ -1134,9 +1131,9 @@ function ResumeBuilderTab() {
 
             <AccordionSection title="Skills and Languages">
               {state.skillGroups.map((group) => (
-                <div key={group.id} className="mb-2 rounded border border-gray-200 p-3">
+                <div key={group.id} className="border-border mb-2 rounded border p-3">
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-600">Skills</span>
+                    <span className="text-muted-foreground text-xs font-medium">Skills</span>
                     <button
                       onClick={() =>
                         set(
@@ -1144,7 +1141,7 @@ function ResumeBuilderTab() {
                           state.skillGroups.filter((g) => g.id !== group.id)
                         )
                       }
-                      className="text-gray-400 hover:text-red-500"
+                      className="text-muted-foreground hover:text-danger"
                     >
                       <X size={12} />
                     </button>
@@ -1162,9 +1159,7 @@ function ResumeBuilderTab() {
                     }
                     placeholder="DevOps Tools"
                   />
-                  <label className="mt-2 mb-1 block text-xs font-medium text-gray-600">
-                    Skills
-                  </label>
+                  <label className="label mt-2">Skills</label>
                   <div className="flex gap-2">
                     <input
                       value={skillInputs[group.id] || ''}
@@ -1176,7 +1171,7 @@ function ResumeBuilderTab() {
                       }
                       onKeyDown={(e) => e.key === 'Enter' && addSkill(group.id)}
                       placeholder="Type and press Enter…"
-                      className="focus:ring-primary flex-1 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+                      className="input bg-background flex-1"
                     />
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -1195,8 +1190,8 @@ function ResumeBuilderTab() {
                 </div>
               ))}
               <AddBtn label="Add Skill Category" onClick={addSkillGroup} />
-              <div className="mt-2 rounded border border-gray-200 p-3">
-                <p className="mb-2 text-xs font-medium text-gray-700">Languages</p>
+              <div className="border-border mt-2 rounded border p-3">
+                <label className="label mb-2 block">Languages</label>
                 <div className="flex gap-2">
                   <input
                     value={langInput}
@@ -1208,7 +1203,7 @@ function ResumeBuilderTab() {
                       }
                     }}
                     placeholder="English, Hindi…"
-                    className="focus:ring-primary flex-1 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+                    className="input bg-background flex-1"
                   />
                   <button
                     onClick={() => {
@@ -1217,7 +1212,7 @@ function ResumeBuilderTab() {
                         setLangInput('');
                       }
                     }}
-                    className="btn btn-sm btn-primary px-2.5"
+                    className="btn btn-sm btn-primary px-2.5 h-10.25"
                   >
                     <Plus size={14} />
                   </button>
@@ -1226,7 +1221,7 @@ function ResumeBuilderTab() {
                   {state.languages.map((l) => (
                     <span
                       key={l}
-                      className="bg-muted text-foreground flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs"
+                      className="bg-primary-light text-primary flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs"
                     >
                       {l}
                       <button
@@ -1270,7 +1265,7 @@ function ResumeBuilderTab() {
                     onChange={(v) => updProj(proj.id, 'organization', v)}
                     placeholder="Personal / Company"
                   />
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-3">
                     <DatePicker
                       label="Start Date"
                       value={proj.startDate}
@@ -1324,7 +1319,7 @@ function ResumeBuilderTab() {
                     onChange={(v) => updEdu(edu.id, 'organization', v)}
                     placeholder="Computer Science"
                   />
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-3">
                     <DatePicker
                       label="Start Date"
                       value={edu.startDate}
@@ -1355,9 +1350,11 @@ function ResumeBuilderTab() {
 
             <AccordionSection title="Certifications">
               {state.certificates.map((cert, i) => (
-                <div key={cert.id} className="mb-2 overflow-hidden rounded border border-gray-200">
-                  <div className="flex items-center justify-between bg-gray-50 px-3 py-2">
-                    <span className="text-xs font-medium text-gray-600">Certificate {i + 1}</span>
+                <div key={cert.id} className="border-border mb-2 rounded border">
+                  <div className="bg-muted flex items-center justify-between rounded-t-lg px-3 py-2">
+                    <span className="text-muted-foreground text-xs font-medium">
+                      Certificate {i + 1}
+                    </span>
                     <button
                       onClick={() =>
                         set(
@@ -1365,12 +1362,12 @@ function ResumeBuilderTab() {
                           state.certificates.filter((c) => c.id !== cert.id)
                         )
                       }
-                      className="text-gray-400 hover:text-red-500"
+                      className="text-muted-foreground hover:text-danger"
                     >
                       <X size={12} />
                     </button>
                   </div>
-                  <div className="space-y-2 p-3">
+                  <div className="space-y-2 rounded-b-lg p-3">
                     <EditorInput
                       label="Certificate Name"
                       value={cert.name}
@@ -1433,9 +1430,7 @@ export default function ResumesPage() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [activeTab, setActiveTab] = useState<Tab>(
-    (searchParams.get('tab') as Tab) || 'resumes'
-  );
+  const [activeTab, setActiveTab] = useState<Tab>((searchParams.get('tab') as Tab) || 'resumes');
 
   const setTab = (tab: Tab) => {
     setActiveTab(tab);

@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Card, Badge, Button, Avatar, Skeleton, Textarea } from '@/components/ui';
+import { Card, Badge, Button, Avatar, Skeleton, Textarea, CustomSelect } from '@/components/ui';
 import { LoginModal } from '@/components/LoginModal';
 import toast from 'react-hot-toast';
 
@@ -46,6 +46,8 @@ export default function JobDetailPage() {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ApplyJobFormData>({
     resolver: zodResolver(applyJobSchema),
@@ -235,19 +237,17 @@ export default function JobDetailPage() {
                 </Link>
               </div>
             ) : (
-              <div>
-                <label className="label">Select Resume *</label>
-                <select {...register('resumeId')} className="input">
-                  <option value="">Choose a resume...</option>
-                  {resumes.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.fileName}
-                      {r.isDefault ? ' (Default)' : ''}
-                    </option>
-                  ))}
-                </select>
-                {errors.resumeId && <p className="form-error">{errors.resumeId.message}</p>}
-              </div>
+              <CustomSelect
+                label="Select Resume *"
+                placeholder="Choose a resume..."
+                value={watch('resumeId') || ''}
+                onChange={(val) => setValue('resumeId', val, { shouldValidate: true })}
+                options={resumes.map((r) => ({
+                  value: r.id,
+                  label: r.fileName + (r.isDefault ? ' (Default)' : ''),
+                }))}
+                error={errors.resumeId?.message}
+              />
             )}
 
             <div>
@@ -283,7 +283,7 @@ export default function JobDetailPage() {
         <div className="space-y-5 lg:col-span-2">
           <Card>
             <h2 className="text-foreground mb-3 font-semibold">Job Description</h2>
-            <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">
+            <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap break-words">
               {job.description}
             </p>
           </Card>

@@ -47,12 +47,12 @@ export const AIPromptBar = ({
         onChange={(e) => setPrompt(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && prompt.trim() && enhance()}
         placeholder={placeholder}
-        className="focus:ring-primary border-border bg-muted text-foreground placeholder:text-muted-foreground flex-1 rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+        className="focus:ring-primary border-border bg-muted text-foreground placeholder:text-muted-foreground flex-1 rounded border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
       />
       <button
         onClick={() => enhance()}
         disabled={isPending || !prompt.trim()}
-        className="bg-primary hover:bg-primary-hover rounded-lg p-2 text-white transition disabled:opacity-50"
+        className="bg-primary hover:bg-primary-hover rounded p-2 text-white transition disabled:opacity-50"
         title="Enhance with AI"
       >
         {isPending ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
