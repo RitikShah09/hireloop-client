@@ -199,13 +199,13 @@ export default function JobDetailPage() {
 
         {isOwner ? (
           <div className="border-border mt-5 flex flex-wrap items-center gap-2 border-t pt-5">
-            <Link href={`/jobs/${job.id}/edit`}>
-              <Button leftIcon={<Pencil size={14} />}>Edit Job</Button>
-            </Link>
             <Link href={`/jobs/${job.id}/candidates`}>
               <Button variant="outline" leftIcon={<Users size={14} />}>
                 View Applicants
               </Button>
+            </Link>
+            <Link href={`/jobs/${job.id}/edit`}>
+              <Button leftIcon={<Pencil size={14} />}>Edit Job</Button>
             </Link>
           </div>
         ) : job.status === 'ACTIVE' && !isCandidate ? (
@@ -275,7 +275,10 @@ export default function JobDetailPage() {
               />
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex justify-end gap-3">
+              <Button type="button" variant="ghost" onClick={() => setShowApply(false)}>
+                Cancel
+              </Button>
               <Button
                 type="submit"
                 isLoading={applying}
@@ -283,9 +286,6 @@ export default function JobDetailPage() {
                 leftIcon={<CheckCircle size={14} />}
               >
                 Submit Application
-              </Button>
-              <Button type="button" variant="ghost" onClick={() => setShowApply(false)}>
-                Cancel
               </Button>
             </div>
           </form>

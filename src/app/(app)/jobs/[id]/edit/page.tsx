@@ -206,7 +206,13 @@ function EditJobForm({ job }: { job: Job }) {
             placeholder="e.g. Node.js — press Enter or click +"
             className="input flex-1"
           />
-          <Button type="button" onClick={addSkill} leftIcon={<Plus size={14} />} size="sm">
+          <Button
+            type="button"
+            onClick={addSkill}
+            leftIcon={<Plus size={14} />}
+            size="sm"
+            className="h-[41.34px]"
+          >
             Add
           </Button>
         </div>
@@ -236,7 +242,13 @@ function EditJobForm({ job }: { job: Job }) {
             placeholder="e.g. 3+ years of Node.js experience"
             className="input flex-1"
           />
-          <Button type="button" onClick={addRequirement} leftIcon={<Plus size={14} />} size="sm">
+          <Button
+            type="button"
+            onClick={addRequirement}
+            leftIcon={<Plus size={14} />}
+            size="sm"
+            className="h-[41.34px]"
+          >
             Add
           </Button>
         </div>
@@ -262,15 +274,15 @@ function EditJobForm({ job }: { job: Job }) {
         </ul>
       </Card>
 
-      <div className="flex gap-3">
-        <Button type="submit" isLoading={isPending} size="lg">
-          Save Changes
-        </Button>
+      <div className="flex justify-end gap-3">
         <Link href={`/jobs/${job.id}`}>
           <Button type="button" variant="ghost" size="lg">
             Cancel
           </Button>
         </Link>
+        <Button type="submit" isLoading={isPending} size="lg">
+          Save Changes
+        </Button>
       </div>
     </form>
   );

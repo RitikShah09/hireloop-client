@@ -101,7 +101,7 @@ export default function AIChatPage() {
         description="Ask questions about your candidate pool — powered by RAG"
       />
 
-      <div className="mb-5 max-w-xs">
+      <div className="xs:max-w-xs mb-5 w-full">
         <CustomSelect
           label=""
           value={selectedJobId}

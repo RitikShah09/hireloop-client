@@ -33,12 +33,12 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, si
       />
       <div
         className={cn(
-          'bg-surface border-border animate-scale-in relative w-full rounded-xl border',
+          'bg-surface border-border animate-scale-in relative flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-lg border',
           modalSizes[size]
         )}
       >
         {title && (
-          <div className="border-border flex items-center justify-between border-b px-6 py-4">
+          <div className="border-border flex shrink-0 items-center justify-between border-b px-6 py-4">
             <h2 className="text-base font-semibold">{title}</h2>
             <button onClick={onClose} className="btn-ghost btn-sm rounded-sm p-1.5">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -52,7 +52,7 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, si
             </button>
           </div>
         )}
-        <div className="p-6">{children}</div>
+        <div className="min-h-0 overflow-y-auto p-6">{children}</div>
       </div>
     </div>
   );

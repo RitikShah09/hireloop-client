@@ -244,9 +244,11 @@ export default function CompanyDetailPage() {
                 )}
               </div>
 
-              <div className="border-border mt-4 border-t pt-3">
-                <Link href={`/jobs/${job.id}`} className="block">
-                  <Button className="w-full">Apply</Button>
+              <div className="border-border xs:justify-end mt-4 flex border-t pt-3">
+                <Link href={`/jobs/${job.id}`} className="xs:w-auto w-full">
+                  <Button className="xs:w-auto w-full" size="sm">
+                    Apply
+                  </Button>
                 </Link>
               </div>
             </Card>

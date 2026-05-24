@@ -503,9 +503,7 @@ export default function JobsPage() {
                   onToggleStatus={(id, status) =>
                     updateJob({
                       id,
-                      data: {
-                        status: status === 'ACTIVE' ? 'CLOSED' : 'ACTIVE',
-                      } as Partial<Job>,
+                      data: { status } as Partial<Job>,
                     })
                   }
                 />

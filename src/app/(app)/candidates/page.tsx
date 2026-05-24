@@ -416,7 +416,7 @@ export default function CandidatesPage() {
           placeholder="Select a job..."
           options={[...jobs.map((j) => ({ value: j.id, label: j.title }))]}
           width="auto"
-          className="min-w-62.5"
+          className="xs:max-w-55 w-full"
         />
         <CustomSelect
           value={statusFilter}
@@ -431,7 +431,7 @@ export default function CandidatesPage() {
             { value: 'HIRED', label: 'Hired' },
           ]}
           width="auto"
-          className="min-w-40"
+          className="xs:max-w-35 w-full"
         />
       </div>
 

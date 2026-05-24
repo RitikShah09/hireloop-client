@@ -95,7 +95,7 @@ export default function AIJobSearchPage() {
       />
 
       <Card>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
             <Search
               size={16}

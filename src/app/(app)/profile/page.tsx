@@ -335,10 +335,7 @@ function CertificationSection() {
         value={form.credentialUrl}
         onChange={(e) => setForm((f) => ({ ...f, credentialUrl: e.target.value }))}
       />
-      <div className="flex gap-2 pt-1">
-        <Button type="submit" isLoading={isPending} className="flex-1">
-          {submitLabel}
-        </Button>
+      <div className="flex justify-end gap-2 pt-1">
         <Button
           type="button"
           variant="secondary"
@@ -348,6 +345,9 @@ function CertificationSection() {
           }}
         >
           Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {submitLabel}
         </Button>
       </div>
     </form>
@@ -576,12 +576,12 @@ function WorkExperienceSection() {
         value={form.description}
         onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
       />
-      <div className="flex gap-2 pt-1">
-        <Button type="submit" isLoading={isPending} className="flex-1">
-          {submitLabel}
-        </Button>
+      <div className="flex justify-end gap-2 pt-1">
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {submitLabel}
         </Button>
       </div>
     </form>
@@ -815,12 +815,12 @@ function EducationSection() {
         value={form.grade}
         onChange={(e) => setForm((f) => ({ ...f, grade: e.target.value }))}
       />
-      <div className="flex gap-2 pt-1">
-        <Button type="submit" isLoading={isPending} className="flex-1">
-          {submitLabel}
-        </Button>
+      <div className="flex justify-end gap-2 pt-1">
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {submitLabel}
         </Button>
       </div>
     </form>
@@ -997,12 +997,12 @@ function MilestoneSection() {
         value={form.date}
         onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
       />
-      <div className="flex gap-2 pt-1">
-        <Button type="submit" isLoading={isPending} className="flex-1">
-          {submitLabel}
-        </Button>
+      <div className="flex justify-end gap-2 pt-1">
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {submitLabel}
         </Button>
       </div>
     </form>

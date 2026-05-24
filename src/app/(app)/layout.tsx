@@ -307,22 +307,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="border-border bg-surface flex shrink-0 items-center justify-between border-b px-5 py-3 sm:px-10 lg:hidden">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="btn-ghost btn-sm rounded-lg p-0"
-              aria-label="Open menu"
-            >
-              <Menu size={18} />
-            </button>
-            <Link href="/dashboard" className="flex items-center gap-1.5">
-              <div className="bg-primary flex h-6 w-6 items-center justify-center rounded">
-                <span className="text-[10px] font-bold text-white">H</span>
-              </div>
-              <span className="text-sm font-semibold">HireLoop</span>
-            </Link>
-          </div>
+        <header className="border-border bg-surface flex shrink-0 items-center justify-between border-b px-5 py-2.5 sm:px-10 lg:hidden">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="btn-ghost btn-sm rounded-lg p-0"
+            aria-label="Open menu"
+          >
+            <Menu size={18} />
+          </button>
           <NotificationBell />
         </header>
 

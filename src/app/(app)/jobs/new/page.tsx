@@ -217,7 +217,13 @@ export default function NewJobPage() {
               placeholder="e.g. Node.js — press Enter or click +"
               className="input flex-1"
             />
-            <Button type="button" onClick={addSkill} leftIcon={<Plus size={14} />} size="sm">
+            <Button
+              type="button"
+              onClick={addSkill}
+              leftIcon={<Plus size={14} />}
+              size="sm"
+              className="h-[41.34px]"
+            >
               Add
             </Button>
           </div>
@@ -247,7 +253,13 @@ export default function NewJobPage() {
               placeholder="e.g. 3+ years of Node.js experience"
               className="input flex-1"
             />
-            <Button type="button" onClick={addRequirement} leftIcon={<Plus size={14} />} size="sm">
+            <Button
+              type="button"
+              onClick={addRequirement}
+              leftIcon={<Plus size={14} />}
+              size="sm"
+              className="h-[41.34px]"
+            >
               Add
             </Button>
           </div>
@@ -276,15 +288,15 @@ export default function NewJobPage() {
           </ul>
         </Card>
 
-        <div className="flex gap-3">
-          <Button type="submit" isLoading={isPending} size="lg">
-            Post Job
-          </Button>
+        <div className="flex justify-end gap-3">
           <Link href="/jobs">
             <Button type="button" variant="ghost" size="lg">
               Cancel
             </Button>
           </Link>
+          <Button type="submit" isLoading={isPending} size="lg">
+            Post Job
+          </Button>
         </div>
       </form>
     </div>

@@ -260,8 +260,8 @@ const CreateModal = ({
 
   return (
     <div className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]">
-      <div className="bg-surface border-border animate-scale-in relative w-full max-w-md overflow-hidden rounded-xl border">
-        <div className="border-border flex items-start justify-between border-b px-6 py-4">
+      <div className="bg-surface border-border animate-scale-in relative flex max-h-[calc(100dvh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-lg border">
+        <div className="border-border flex shrink-0 items-start justify-between border-b px-6 py-4">
           <div>
             <h2 className="text-foreground text-base font-semibold">Create your Resume</h2>
             <p className="text-muted-foreground mt-0.5 text-sm">
@@ -276,7 +276,7 @@ const CreateModal = ({
             <X size={14} />
           </button>
         </div>
-        <div className="p-6">
+        <div className="min-h-0 overflow-y-auto p-6">
           {step === 'options' && (
             <div className="space-y-3">
               {[
@@ -367,7 +367,7 @@ const CreateModal = ({
             />
           )}
         </div>
-        <div className="border-border flex justify-between border-t px-6 py-4">
+        <div className="border-border flex shrink-0 justify-between border-t px-6 py-4">
           <button
             onClick={() => (step === 'options' ? onClose() : setStep('options'))}
             className="btn btn-md btn-secondary"

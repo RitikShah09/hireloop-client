@@ -185,7 +185,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             disabled && 'pointer-events-none opacity-50'
           )}
         >
-          <span className="truncate">{selected?.label ?? placeholder}</span>
+          <span className="min-w-0 flex-1 truncate">{selected?.label ?? placeholder}</span>
           <ChevronDown
             size={14}
             className={cn(
@@ -212,7 +212,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                     : 'text-foreground hover:bg-[hsl(var(--surface-raised))]'
                 )}
               >
-                {option.label}
+                <span className="min-w-0 flex-1 truncate">{option.label}</span>
                 <Check
                   size={13}
                   className={cn('shrink-0', option.value === value ? 'opacity-100' : 'opacity-0')}
