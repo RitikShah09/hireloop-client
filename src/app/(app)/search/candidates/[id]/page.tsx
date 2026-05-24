@@ -271,7 +271,7 @@ export default function CandidateDetailPage() {
             <Card>
               <h2 className="text-foreground mb-4 font-semibold">Experience</h2>
               <div className="space-y-4">
-                {data.workExperiences.map((exp, i) => (
+                {data.workExperiences.map((exp) => (
                   <div key={exp.id} className="flex gap-3">
                     <div className="bg-primary-light mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
                       <Building2 size={14} className="text-primary" />

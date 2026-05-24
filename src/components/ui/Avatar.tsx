@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 interface AvatarProps {
@@ -27,9 +28,9 @@ export const Avatar: React.FC<AvatarProps> = ({ src, name, size = 'md', classNam
       .join('')
       .toUpperCase() || '?';
   return (
-    <div className={cn('avatar', avatarSizes[size], className)}>
+    <div className={cn('avatar relative overflow-hidden', avatarSizes[size], className)}>
       {src ? (
-        <img src={src} alt={name} className="h-full w-full object-cover" />
+        <Image src={src} alt={name || ''} fill className="object-cover" />
       ) : (
         <span>{initials}</span>
       )}

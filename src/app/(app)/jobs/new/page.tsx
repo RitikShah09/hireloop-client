@@ -16,6 +16,8 @@ export default function NewJobPage() {
   const router = useRouter();
   const { mutate: createJob, isPending } = useCreateJob();
 
+  const [minClosingDate] = useState(() => new Date(Date.now() + 60000).toISOString().slice(0, 16));
+
   const [skillInput, setSkillInput] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
   const [skillsError, setSkillsError] = useState('');
@@ -198,7 +200,7 @@ export default function NewJobPage() {
                 type="datetime-local"
                 className="input w-full"
                 style={{ colorScheme: 'light' }}
-                min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
+                min={minClosingDate}
               />
               {errors.closingDate && (
                 <p className="form-error mt-1">{errors.closingDate.message}</p>

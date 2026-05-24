@@ -2,6 +2,7 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppDispatch } from '@/store/hooks';
@@ -136,12 +137,13 @@ function Sidebar({
 
       <div className="border-border border-b px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <div className="bg-primary-muted flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
+          <div className="bg-primary-muted relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
             {user?.avatarUrl || user?.logoUrl ? (
-              <img
-                src={user.avatarUrl || user.logoUrl}
-                alt={displayName}
-                className="h-full w-full object-cover"
+              <Image
+                src={(user.avatarUrl || user.logoUrl)!}
+                alt={displayName || ''}
+                fill
+                className="object-cover"
               />
             ) : (
               <span className="text-primary text-xs font-semibold">
@@ -231,7 +233,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const nav = user?.role === 'COMPANY' ? companyNav : candidateNav;
 
   const pathname = usePathname();
+
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSidebarOpen(false);
   }, [pathname]);
 

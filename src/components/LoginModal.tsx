@@ -107,7 +107,7 @@ export function LoginModal({ open, onClose, onSuccess, message }: LoginModalProp
         <Divider label="or" />
 
         <p className="text-muted-foreground text-center text-sm">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link
             href="/register"
             className="text-primary font-medium hover:underline"

@@ -57,16 +57,17 @@ function NotificationItem({
   const THRESH = 55;
 
   const startXRef = useRef<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [delta, setDelta] = useState(0);
   const [snapped, setSnapped] = useState<'read' | 'delete' | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   const snapPos = snapped === 'read' ? SNAP : snapped === 'delete' ? -SNAP : 0;
-  const isDragging = startXRef.current !== null;
   const cardX = isDragging ? Math.max(-SNAP - 15, Math.min(SNAP + 15, snapPos + delta)) : snapPos;
 
   const onTouchStart = (e: React.TouchEvent) => {
     startXRef.current = e.touches[0].clientX;
+    setIsDragging(true);
     setDelta(0);
   };
   const onTouchMove = (e: React.TouchEvent) => {
@@ -76,6 +77,7 @@ function NotificationItem({
   const onTouchEnd = () => {
     const eff = Math.max(-SNAP - 15, Math.min(SNAP + 15, snapPos + delta));
     startXRef.current = null;
+    setIsDragging(false);
     if (eff > THRESH && !notification.isRead) setSnapped('read');
     else if (eff < -THRESH) setSnapped('delete');
     else setSnapped(null);

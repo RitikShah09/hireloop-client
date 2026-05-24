@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -49,8 +49,14 @@ import {
   Github,
   Linkedin,
   Globe,
+  Mail,
+  CheckCircle,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { setEmailVerified } from '@/store/slices/authSlice';
+import api from '@/lib/axios';
 import {
   Card,
   Button,
@@ -66,6 +72,427 @@ import {
 } from '@/components/ui';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+
+// ─── Hoisted form components ─────────────────────────────────────────────────
+// These MUST live at module scope. Defining components inside another component
+// creates a new identity on every render, causing React to remount them and
+// losing focus after each keystroke.
+
+const emptyCert = { name: '', issuer: '', issueDate: '', credentialUrl: '' };
+
+interface CertFormProps {
+  form: typeof emptyCert;
+  setForm: React.Dispatch<React.SetStateAction<typeof emptyCert>>;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
+  isPending: boolean;
+  submitLabel: string;
+}
+
+function CertForm({ form, setForm, onSubmit, onCancel, isPending, submitLabel }: CertFormProps) {
+  return (
+    <form onSubmit={onSubmit} className="space-y-3">
+      <Input
+        label="Certification Name"
+        required
+        value={form.name}
+        onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+      />
+      <Input
+        label="Issuer"
+        required
+        value={form.issuer}
+        onChange={(e) => setForm((f) => ({ ...f, issuer: e.target.value }))}
+      />
+      <Input
+        label="Issue Date"
+        type="month"
+        value={form.issueDate}
+        onChange={(e) => setForm((f) => ({ ...f, issueDate: e.target.value }))}
+      />
+      <Input
+        label="Credential URL"
+        type="url"
+        placeholder="https://"
+        value={form.credentialUrl}
+        onChange={(e) => setForm((f) => ({ ...f, credentialUrl: e.target.value }))}
+      />
+      <div className="flex justify-end gap-2 pt-1">
+        <Button type="button" variant="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {submitLabel}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+const emptyExp = {
+  company: '',
+  role: '',
+  location: '',
+  startDate: '',
+  endDate: '',
+  isCurrent: false,
+  description: '',
+};
+
+interface ExpFormProps {
+  form: typeof emptyExp;
+  setForm: React.Dispatch<React.SetStateAction<typeof emptyExp>>;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
+  isPending: boolean;
+  submitLabel: string;
+}
+
+function ExpForm({ form, setForm, onSubmit, onCancel, isPending, submitLabel }: ExpFormProps) {
+  return (
+    <form onSubmit={onSubmit} className="space-y-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Input
+          label="Company"
+          required
+          value={form.company}
+          onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+        />
+        <Input
+          label="Role / Title"
+          required
+          value={form.role}
+          onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
+        />
+      </div>
+      <Input
+        label="Location"
+        placeholder="Optional"
+        value={form.location}
+        onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
+      />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Input
+          label="Start Date"
+          type="month"
+          required
+          value={form.startDate}
+          onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+        />
+        {!form.isCurrent && (
+          <Input
+            label="End Date"
+            type="month"
+            value={form.endDate}
+            onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+          />
+        )}
+      </div>
+      <label className="flex cursor-pointer items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={form.isCurrent}
+          onChange={(e) => setForm((f) => ({ ...f, isCurrent: e.target.checked }))}
+          className="rounded"
+        />
+        Currently working here
+      </label>
+      <Textarea
+        label="Description"
+        rows={2}
+        placeholder="Key responsibilities..."
+        value={form.description}
+        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+      />
+      <div className="flex justify-end gap-2 pt-1">
+        <Button type="button" variant="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {submitLabel}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+const emptyEdu = {
+  institution: '',
+  degree: '',
+  field: '',
+  startDate: '',
+  endDate: '',
+  isCurrent: false,
+  grade: '',
+};
+
+interface EduFormProps {
+  form: typeof emptyEdu;
+  setForm: React.Dispatch<React.SetStateAction<typeof emptyEdu>>;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
+  isPending: boolean;
+  submitLabel: string;
+}
+
+function EduForm({ form, setForm, onSubmit, onCancel, isPending, submitLabel }: EduFormProps) {
+  return (
+    <form onSubmit={onSubmit} className="space-y-3">
+      <Input
+        label="Institution"
+        required
+        value={form.institution}
+        onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))}
+      />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Input
+          label="Degree"
+          required
+          placeholder="B.Tech, MBA..."
+          value={form.degree}
+          onChange={(e) => setForm((f) => ({ ...f, degree: e.target.value }))}
+        />
+        <Input
+          label="Field of Study"
+          placeholder="Computer Science..."
+          value={form.field}
+          onChange={(e) => setForm((f) => ({ ...f, field: e.target.value }))}
+        />
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Input
+          label="Start Date"
+          type="month"
+          required
+          value={form.startDate}
+          onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+        />
+        {!form.isCurrent && (
+          <Input
+            label="End Date"
+            type="month"
+            value={form.endDate}
+            onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+          />
+        )}
+      </div>
+      <label className="flex cursor-pointer items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={form.isCurrent}
+          onChange={(e) => setForm((f) => ({ ...f, isCurrent: e.target.checked }))}
+          className="rounded"
+        />
+        Currently studying
+      </label>
+      <Input
+        label="Grade / CGPA"
+        placeholder="Optional"
+        value={form.grade}
+        onChange={(e) => setForm((f) => ({ ...f, grade: e.target.value }))}
+      />
+      <div className="flex justify-end gap-2 pt-1">
+        <Button type="button" variant="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {submitLabel}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+const emptyMilestone = { title: '', description: '', date: '' };
+
+interface MilestoneFormProps {
+  form: typeof emptyMilestone;
+  setForm: React.Dispatch<React.SetStateAction<typeof emptyMilestone>>;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
+  isPending: boolean;
+  submitLabel: string;
+}
+
+function MilestoneForm({
+  form,
+  setForm,
+  onSubmit,
+  onCancel,
+  isPending,
+  submitLabel,
+}: MilestoneFormProps) {
+  return (
+    <form onSubmit={onSubmit} className="space-y-3">
+      <Input
+        label="Title"
+        required
+        value={form.title}
+        onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+      />
+      <Textarea
+        label="Description"
+        rows={2}
+        placeholder="Optional details..."
+        value={form.description}
+        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+      />
+      <Input
+        label="Date"
+        type="date"
+        required
+        value={form.date}
+        onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+      />
+      <div className="flex justify-end gap-2 pt-1">
+        <Button type="button" variant="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {submitLabel}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+// ─── Email verification card ──────────────────────────────────────────────────
+// Always rendered — shows verified badge OR the OTP flow so users who skipped
+// during registration can verify at any time from their profile.
+
+function EmailVerificationSection() {
+  const { user } = useAppSelector((s) => s.auth);
+  const dispatch = useAppDispatch();
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+  const { mutate: sendOtp, isPending: sending } = useMutation({
+    mutationFn: () => api.post('/auth/send-otp'),
+    onSuccess: () => {
+      toast.success('Verification code sent to your email!');
+      setShowOtp(true);
+    },
+    onError: () => toast.error('Failed to send verification code'),
+  });
+
+  const { mutate: verify, isPending: verifying } = useMutation({
+    mutationFn: (code: string) => api.post('/auth/verify-email', { otp: code }),
+    onSuccess: () => {
+      dispatch(setEmailVerified(true));
+      toast.success('Email verified successfully!');
+      setShowOtp(false);
+      setOtp(['', '', '', '', '', '']);
+    },
+    onError: () => toast.error('Invalid or expired OTP. Please try again.'),
+  });
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^[0-9]?$/.test(value)) return;
+    const updated = [...otp];
+    updated[index] = value;
+    setOtp(updated);
+    if (value && index < 5) otpRefs.current[index + 1]?.focus();
+    if (index === 5 && updated.join('').length === 6) verify(updated.join(''));
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) otpRefs.current[index - 1]?.focus();
+  };
+
+  const isVerified = user?.emailVerified === true;
+
+  if (isVerified) return null;
+
+  return (
+    <Card className="border-warning/40">
+      <div className="flex items-start gap-3">
+        <div className="bg-warning-light flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+          <Mail size={15} className="text-warning" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-foreground text-sm font-medium">Verify your email address</p>
+          <p className="text-muted-foreground mt-0.5 text-xs">
+            Send a code to <span className="font-medium">{user?.email}</span> to secure your account
+          </p>
+
+          {!showOtp ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="mt-3"
+              onClick={() => sendOtp()}
+              isLoading={sending}
+              leftIcon={<Mail size={13} />}
+            >
+              Send verification code
+            </Button>
+          ) : (
+            <div className="mt-3 space-y-3">
+              <p className="text-muted-foreground text-xs">
+                Enter the 6-digit code sent to{' '}
+                <span className="text-foreground font-medium">{user?.email}</span>
+              </p>
+              <div className="flex gap-1.5">
+                {otp.map((digit, i) => (
+                  <input
+                    key={i}
+                    ref={(el) => {
+                      otpRefs.current[i] = el;
+                    }}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(i, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                    className="focus:ring-primary transition-micro bg-surface text-foreground h-10 w-10 rounded-lg border-2 text-center text-base font-bold focus:ring-2 focus:outline-none"
+                    style={{
+                      borderColor: digit ? 'hsl(var(--primary))' : 'hsl(var(--border))',
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  size="sm"
+                  isLoading={verifying}
+                  disabled={otp.join('').length < 6}
+                  onClick={() => verify(otp.join(''))}
+                  leftIcon={<CheckCircle size={13} />}
+                >
+                  Verify
+                </Button>
+                <button
+                  onClick={() => {
+                    setOtp(['', '', '', '', '', '']);
+                    sendOtp();
+                  }}
+                  disabled={sending}
+                  className="text-primary flex items-center gap-1 text-xs hover:underline disabled:opacity-50"
+                >
+                  <RefreshCw size={11} className={sending ? 'animate-spin' : ''} />
+                  Resend code
+                </button>
+                <button
+                  onClick={() => {
+                    setShowOtp(false);
+                    setOtp(['', '', '', '', '', '']);
+                  }}
+                  className="text-muted-foreground text-xs hover:underline"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+// ─── Profile forms ────────────────────────────────────────────────────────────
 
 function CandidateProfileForm() {
   const { data, isPending: isLoadingProfile, isError, refetch } = useCandidateProfile();
@@ -249,8 +676,6 @@ function CandidateProfileForm() {
   );
 }
 
-const emptyCert = { name: '', issuer: '', issueDate: '', credentialUrl: '' };
-
 function CertificationSection() {
   const { data, isLoading } = useCertifications();
   const { mutate: add, isPending: adding } = useAddCertification();
@@ -299,59 +724,6 @@ function CertificationSection() {
       { onSuccess: () => setEditItem(null) }
     );
   };
-
-  const CertForm = ({
-    onSubmit,
-    isPending,
-    submitLabel,
-  }: {
-    onSubmit: (e: React.FormEvent) => void;
-    isPending: boolean;
-    submitLabel: string;
-  }) => (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <Input
-        label="Certification Name"
-        required
-        value={form.name}
-        onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-      />
-      <Input
-        label="Issuer"
-        required
-        value={form.issuer}
-        onChange={(e) => setForm((f) => ({ ...f, issuer: e.target.value }))}
-      />
-      <Input
-        label="Issue Date"
-        type="month"
-        value={form.issueDate}
-        onChange={(e) => setForm((f) => ({ ...f, issueDate: e.target.value }))}
-      />
-      <Input
-        label="Credential URL"
-        type="url"
-        placeholder="https://"
-        value={form.credentialUrl}
-        onChange={(e) => setForm((f) => ({ ...f, credentialUrl: e.target.value }))}
-      />
-      <div className="flex justify-end gap-2 pt-1">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => {
-            setAddOpen(false);
-            setEditItem(null);
-          }}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" isLoading={isPending}>
-          {submitLabel}
-        </Button>
-      </div>
-    </form>
-  );
 
   return (
     <Card>
@@ -429,7 +801,17 @@ function CertificationSection() {
       )}
 
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add Certification" size="sm">
-        <CertForm onSubmit={handleAdd} isPending={adding} submitLabel="Add Certification" />
+        <CertForm
+          form={form}
+          setForm={setForm}
+          onSubmit={handleAdd}
+          isPending={adding}
+          submitLabel="Add Certification"
+          onCancel={() => {
+            setAddOpen(false);
+            setEditItem(null);
+          }}
+        />
       </Modal>
       <Modal
         open={!!editItem}
@@ -437,7 +819,14 @@ function CertificationSection() {
         title="Edit Certification"
         size="sm"
       >
-        <CertForm onSubmit={handleEdit} isPending={updating} submitLabel="Save Changes" />
+        <CertForm
+          form={form}
+          setForm={setForm}
+          onSubmit={handleEdit}
+          isPending={updating}
+          submitLabel="Save Changes"
+          onCancel={() => setEditItem(null)}
+        />
       </Modal>
       <ConfirmDialog
         open={!!deleteId}
@@ -454,16 +843,6 @@ function CertificationSection() {
     </Card>
   );
 }
-
-const emptyExp = {
-  company: '',
-  role: '',
-  location: '',
-  startDate: '',
-  endDate: '',
-  isCurrent: false,
-  description: '',
-};
 
 function WorkExperienceSection() {
   const { data, isLoading } = useWorkExperience();
@@ -510,82 +889,6 @@ function WorkExperienceSection() {
     if (!editItem) return;
     update({ id: editItem.id, data: buildPayload() }, { onSuccess: () => setEditItem(null) });
   };
-
-  const ExpForm = ({
-    onSubmit,
-    isPending,
-    submitLabel,
-    onCancel,
-  }: {
-    onSubmit: (e: React.FormEvent) => void;
-    isPending: boolean;
-    submitLabel: string;
-    onCancel: () => void;
-  }) => (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Input
-          label="Company"
-          required
-          value={form.company}
-          onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
-        />
-        <Input
-          label="Role / Title"
-          required
-          value={form.role}
-          onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
-        />
-      </div>
-      <Input
-        label="Location"
-        placeholder="Optional"
-        value={form.location}
-        onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-      />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Input
-          label="Start Date"
-          type="month"
-          required
-          value={form.startDate}
-          onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
-        />
-        {!form.isCurrent && (
-          <Input
-            label="End Date"
-            type="month"
-            value={form.endDate}
-            onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
-          />
-        )}
-      </div>
-      <label className="flex cursor-pointer items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={form.isCurrent}
-          onChange={(e) => setForm((f) => ({ ...f, isCurrent: e.target.checked }))}
-          className="rounded"
-        />
-        Currently working here
-      </label>
-      <Textarea
-        label="Description"
-        rows={2}
-        placeholder="Key responsibilities..."
-        value={form.description}
-        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-      />
-      <div className="flex justify-end gap-2 pt-1">
-        <Button type="button" variant="secondary" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" isLoading={isPending}>
-          {submitLabel}
-        </Button>
-      </div>
-    </form>
-  );
 
   return (
     <Card>
@@ -664,6 +967,8 @@ function WorkExperienceSection() {
 
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add Work Experience">
         <ExpForm
+          form={form}
+          setForm={setForm}
           onSubmit={handleAdd}
           isPending={adding}
           submitLabel="Add Experience"
@@ -672,6 +977,8 @@ function WorkExperienceSection() {
       </Modal>
       <Modal open={!!editItem} onClose={() => setEditItem(null)} title="Edit Work Experience">
         <ExpForm
+          form={form}
+          setForm={setForm}
           onSubmit={handleEdit}
           isPending={updating}
           submitLabel="Save Changes"
@@ -693,16 +1000,6 @@ function WorkExperienceSection() {
     </Card>
   );
 }
-
-const emptyEdu = {
-  institution: '',
-  degree: '',
-  field: '',
-  startDate: '',
-  endDate: '',
-  isCurrent: false,
-  grade: '',
-};
 
 function EducationSection() {
   const { data, isLoading } = useEducation();
@@ -749,82 +1046,6 @@ function EducationSection() {
     if (!editItem) return;
     update({ id: editItem.id, data: buildPayload() }, { onSuccess: () => setEditItem(null) });
   };
-
-  const EduForm = ({
-    onSubmit,
-    isPending,
-    submitLabel,
-    onCancel,
-  }: {
-    onSubmit: (e: React.FormEvent) => void;
-    isPending: boolean;
-    submitLabel: string;
-    onCancel: () => void;
-  }) => (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <Input
-        label="Institution"
-        required
-        value={form.institution}
-        onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))}
-      />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Input
-          label="Degree"
-          required
-          placeholder="B.Tech, MBA..."
-          value={form.degree}
-          onChange={(e) => setForm((f) => ({ ...f, degree: e.target.value }))}
-        />
-        <Input
-          label="Field of Study"
-          placeholder="Computer Science..."
-          value={form.field}
-          onChange={(e) => setForm((f) => ({ ...f, field: e.target.value }))}
-        />
-      </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Input
-          label="Start Date"
-          type="month"
-          required
-          value={form.startDate}
-          onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
-        />
-        {!form.isCurrent && (
-          <Input
-            label="End Date"
-            type="month"
-            value={form.endDate}
-            onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
-          />
-        )}
-      </div>
-      <label className="flex cursor-pointer items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={form.isCurrent}
-          onChange={(e) => setForm((f) => ({ ...f, isCurrent: e.target.checked }))}
-          className="rounded"
-        />
-        Currently studying
-      </label>
-      <Input
-        label="Grade / CGPA"
-        placeholder="Optional"
-        value={form.grade}
-        onChange={(e) => setForm((f) => ({ ...f, grade: e.target.value }))}
-      />
-      <div className="flex justify-end gap-2 pt-1">
-        <Button type="button" variant="secondary" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" isLoading={isPending}>
-          {submitLabel}
-        </Button>
-      </div>
-    </form>
-  );
 
   return (
     <Card>
@@ -897,6 +1118,8 @@ function EducationSection() {
 
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add Education">
         <EduForm
+          form={form}
+          setForm={setForm}
           onSubmit={handleAdd}
           isPending={adding}
           submitLabel="Add Education"
@@ -905,6 +1128,8 @@ function EducationSection() {
       </Modal>
       <Modal open={!!editItem} onClose={() => setEditItem(null)} title="Edit Education">
         <EduForm
+          form={form}
+          setForm={setForm}
           onSubmit={handleEdit}
           isPending={updating}
           submitLabel="Save Changes"
@@ -926,8 +1151,6 @@ function EducationSection() {
     </Card>
   );
 }
-
-const emptyMilestone = { title: '', description: '', date: '' };
 
 function MilestoneSection() {
   const { data, isLoading } = useMilestones();
@@ -964,49 +1187,6 @@ function MilestoneSection() {
     if (!editItem) return;
     update({ id: editItem.id, data: form }, { onSuccess: () => setEditItem(null) });
   };
-
-  const MilestoneForm = ({
-    onSubmit,
-    isPending,
-    submitLabel,
-    onCancel,
-  }: {
-    onSubmit: (e: React.FormEvent) => void;
-    isPending: boolean;
-    submitLabel: string;
-    onCancel: () => void;
-  }) => (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <Input
-        label="Title"
-        required
-        value={form.title}
-        onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-      />
-      <Textarea
-        label="Description"
-        rows={2}
-        placeholder="Optional details..."
-        value={form.description}
-        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-      />
-      <Input
-        label="Date"
-        type="date"
-        required
-        value={form.date}
-        onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-      />
-      <div className="flex justify-end gap-2 pt-1">
-        <Button type="button" variant="secondary" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" isLoading={isPending}>
-          {submitLabel}
-        </Button>
-      </div>
-    </form>
-  );
 
   return (
     <Card>
@@ -1075,6 +1255,8 @@ function MilestoneSection() {
 
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add Milestone" size="sm">
         <MilestoneForm
+          form={form}
+          setForm={setForm}
           onSubmit={handleAdd}
           isPending={adding}
           submitLabel="Add Milestone"
@@ -1083,6 +1265,8 @@ function MilestoneSection() {
       </Modal>
       <Modal open={!!editItem} onClose={() => setEditItem(null)} title="Edit Milestone" size="sm">
         <MilestoneForm
+          form={form}
+          setForm={setForm}
           onSubmit={handleEdit}
           isPending={updating}
           submitLabel="Save Changes"
@@ -1241,6 +1425,8 @@ function CompanyProfileForm() {
   );
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 type ProfileTab = 'profile' | 'experience' | 'education' | 'certifications' | 'milestones';
 
 const candidateTabs: { id: ProfileTab; label: string }[] = [
@@ -1274,6 +1460,7 @@ export default function ProfilePage() {
           title="Company Profile"
           description="Manage your company's public information"
         />
+        <EmailVerificationSection />
         <CompanyProfileForm />
       </div>
     );
@@ -1282,6 +1469,8 @@ export default function ProfilePage() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <PageHeader title="My Profile" description="Manage your professional information" />
+
+      <EmailVerificationSection />
 
       <div className="bg-muted flex gap-1 overflow-x-auto rounded-lg p-1">
         {candidateTabs.map((tab) => (

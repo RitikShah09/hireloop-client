@@ -9,6 +9,7 @@ import { registerSchema, RegisterFormData } from '@/validators';
 import { authApi } from '@/services/api';
 import { useAppDispatch } from '@/store/hooks';
 import { setUser } from '@/store/slices/authSlice';
+import api from '@/lib/axios';
 import { useGuestGuard } from '@/hooks/useAuthGuard';
 import { Input, Button, Divider } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -51,10 +52,13 @@ export default function RegisterPage() {
             firstName: u.candidate?.firstName,
             lastName: u.candidate?.lastName,
             companyName: u.company?.name,
+            emailVerified: false,
           })
         );
+
+        api.post('/auth/send-otp').catch(() => {});
         toast.success('Welcome to HireLoop!');
-        router.push('/dashboard');
+        router.push('/verify-email');
       }
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {

@@ -27,6 +27,7 @@ export const useAuthInit = () => {
               avatarUrl: u.candidate?.avatarUrl,
               companyName: u.company?.name,
               logoUrl: u.company?.logoUrl,
+              emailVerified: u.isVerified,
             })
           );
         } else {

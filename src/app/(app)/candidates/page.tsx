@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   useMyJobs,
   useApplications,
@@ -389,18 +389,17 @@ function ApplicationCard({
 export default function CandidatesPage() {
   useAuthGuard('COMPANY');
   const { data: jobsData } = useMyJobs();
-  const jobs = jobsData?.data || [];
+  const jobs = useMemo(() => jobsData?.data ?? [], [jobsData]);
   const [selectedJobId, setSelectedJobId] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
+  const effectiveJobId = selectedJobId || jobs[0]?.id || '';
+
   const { data: appsData, isLoading } = useApplications(
-    selectedJobId
-      ? { jobId: selectedJobId, ...(statusFilter && { status: statusFilter }) }
+    effectiveJobId
+      ? { jobId: effectiveJobId, ...(statusFilter && { status: statusFilter }) }
       : undefined
   );
-  useEffect(() => {
-    if (jobs.length && !selectedJobId) setSelectedJobId(jobs[0].id);
-  }, [jobs]);
 
   const { mutate: updateStatus } = useUpdateApplicationStatus();
   const apps = appsData?.data || [];
@@ -411,7 +410,7 @@ export default function CandidatesPage() {
 
       <div className="flex flex-wrap gap-3">
         <CustomSelect
-          value={selectedJobId}
+          value={effectiveJobId}
           onChange={setSelectedJobId}
           placeholder="Select a job..."
           options={[...jobs.map((j) => ({ value: j.id, label: j.title }))]}

@@ -33,23 +33,25 @@ export default function LoginPage() {
     mutationFn: (data: LoginFormData) => authApi.login(data),
     onSuccess: ({ data }) => {
       if (data.data?.user) {
-        const u = data.data.user as ReturnType<typeof authApi.me> extends Promise<{
-          data: { data: infer U };
-        }>
-          ? U
-          : never;
+        const u = data.data.user as {
+          id: string;
+          email: string;
+          role: string;
+          emailVerified?: boolean;
+          candidate?: { firstName?: string; lastName?: string; avatarUrl?: string };
+          company?: { name?: string; logoUrl?: string };
+        };
         dispatch(
           setUser({
-            userId: (data.data.user as { id: string }).id,
-            role: data.data.user.role as 'COMPANY' | 'CANDIDATE' | 'ADMIN',
-            email: data.data.user.email,
-            firstName: (data.data.user as { candidate?: { firstName: string } }).candidate
-              ?.firstName,
-            lastName: (data.data.user as { candidate?: { lastName: string } }).candidate?.lastName,
-            avatarUrl: (data.data.user as { candidate?: { avatarUrl?: string } }).candidate
-              ?.avatarUrl,
-            companyName: (data.data.user as { company?: { name: string } }).company?.name,
-            logoUrl: (data.data.user as { company?: { logoUrl?: string } }).company?.logoUrl,
+            userId: u.id,
+            role: u.role as 'COMPANY' | 'CANDIDATE' | 'ADMIN',
+            email: u.email,
+            emailVerified: u.emailVerified,
+            firstName: u.candidate?.firstName,
+            lastName: u.candidate?.lastName,
+            avatarUrl: u.candidate?.avatarUrl,
+            companyName: u.company?.name,
+            logoUrl: u.company?.logoUrl,
           })
         );
         toast.success('Welcome back!');

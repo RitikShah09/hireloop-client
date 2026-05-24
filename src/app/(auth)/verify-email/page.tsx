@@ -3,7 +3,8 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { setEmailVerified } from '@/store/slices/authSlice';
 import api from '@/lib/axios';
 import { Mail, CheckCircle, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui';
 
 export default function VerifyEmailPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((s) => s.auth);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -24,6 +26,7 @@ export default function VerifyEmailPage() {
   const { mutate: verify, isPending: verifying } = useMutation({
     mutationFn: (code: string) => api.post('/auth/verify-email', { otp: code }),
     onSuccess: () => {
+      dispatch(setEmailVerified(true));
       toast.success('Email verified! Welcome to HireLoop.');
       router.push('/dashboard');
     },
@@ -102,7 +105,7 @@ export default function VerifyEmailPage() {
           </Button>
 
           <div className="mt-4 flex items-center justify-center gap-2">
-            <p className="text-muted-foreground text-sm">Didn't receive it?</p>
+            <p className="text-muted-foreground text-sm">Didn&apos;t receive it?</p>
             <button
               onClick={() => sendOtp()}
               disabled={sending}

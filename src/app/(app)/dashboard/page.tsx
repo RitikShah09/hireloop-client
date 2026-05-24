@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAppSelector } from '@/store/hooks';
 import { useApplicationStats, useSuggestedJobs } from '@/hooks/useApi';
 import {
@@ -24,11 +25,14 @@ function SuggestedJobCard({ job }: { job: Job }) {
       <div className="card-hover transition-smooth overflow-hidden rounded-none border-x-0 border-t-0 p-4 first:border-b-0">
         <div className="flex items-start gap-3">
           {job.company?.logoUrl ? (
-            <img
-              src={job.company.logoUrl}
-              alt={job.company.name}
-              className="h-9 w-9 shrink-0 rounded-lg object-cover"
-            />
+            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg">
+              <Image
+                src={job.company.logoUrl}
+                alt={job.company.name || ''}
+                fill
+                className="object-cover"
+              />
+            </div>
           ) : (
             <div className="bg-primary-muted flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
               <Briefcase size={14} className="text-primary" />

@@ -2,7 +2,6 @@ import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { notificationsService } from '@/services/notifications.service';
 import { queryKeys } from '@/lib/queryKeys';
 import type { Notification } from '@/types/notification.types';
-import type { ApiResponse } from '@/types/api.types';
 
 export type NotifPage = {
   success: boolean;

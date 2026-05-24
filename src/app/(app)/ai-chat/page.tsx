@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useMyJobs, useChatWithPool } from '@/hooks/useApi';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
@@ -54,8 +54,10 @@ const SUGGESTIONS = [
 export default function AIChatPage() {
   useAuthGuard('COMPANY');
   const { data: jobsData } = useMyJobs();
-  const jobs = jobsData?.data || [];
+  const jobs = useMemo(() => jobsData?.data ?? [], [jobsData]);
   const [selectedJobId, setSelectedJobId] = useState('');
+
+  const effectiveJobId = selectedJobId || jobs[0]?.id || '';
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -65,17 +67,13 @@ export default function AIChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  useEffect(() => {
-    if (jobs.length && !selectedJobId) setSelectedJobId(jobs[0].id);
-  }, [jobs]);
-
   const sendMessage = (msg?: string) => {
     const text = msg || input.trim();
-    if (!text || !selectedJobId || isPending) return;
+    if (!text || !effectiveJobId || isPending) return;
     setMessages((prev) => [...prev, { role: 'user', content: text }]);
     setInput('');
     chat(
-      { jobId: selectedJobId, query: text },
+      { jobId: effectiveJobId, query: text },
       {
         onSuccess: (res) => {
           const answer = res.data.data?.answer || 'No response';
@@ -104,7 +102,7 @@ export default function AIChatPage() {
       <div className="xs:max-w-xs mb-5 w-full">
         <CustomSelect
           label=""
-          value={selectedJobId}
+          value={effectiveJobId}
           placeholder="Select a job..."
           onChange={(value) => {
             setSelectedJobId(value);

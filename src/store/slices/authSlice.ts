@@ -9,6 +9,7 @@ export interface AuthUser {
   avatarUrl?: string;
   companyName?: string;
   logoUrl?: string;
+  emailVerified?: boolean;
 }
 
 interface AuthState {
@@ -40,10 +41,13 @@ const authSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
+    setEmailVerified: (state, action: PayloadAction<boolean>) => {
+      if (state.user) state.user.emailVerified = action.payload;
+    },
   },
 });
 
-export const { setUser, clearAuth, setLoading } = authSlice.actions;
+export const { setUser, clearAuth, setLoading, setEmailVerified } = authSlice.actions;
 
 export const logout = clearAuth;
 export const setCredentials = (payload: { user: AuthUser }) => setUser(payload.user);
