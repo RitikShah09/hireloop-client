@@ -38,6 +38,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               error && 'input-error',
               className
             )}
+            style={
+              ['date', 'month', 'datetime-local', 'time', 'week'].includes(props.type ?? '')
+                ? { colorScheme: 'light', ...props.style }
+                : props.style
+            }
             {...props}
           />
           {rightIcon && (

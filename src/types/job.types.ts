@@ -1,5 +1,6 @@
 export interface Job {
   id: string;
+  companyId?: string;
   title: string;
   description: string;
   requirements: string[];

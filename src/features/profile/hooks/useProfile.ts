@@ -9,9 +9,10 @@ export const useCandidateProfile = () =>
     staleTime: 1000 * 60 * 5,
   });
 
-export const useCompanyProfile = () =>
+export const useCompanyProfile = (enabled = true) =>
   useQuery({
     queryKey: queryKeys.profile.company,
     queryFn: () => profileService.getCompany().then((r) => r.data),
     staleTime: 1000 * 60 * 5,
+    enabled,
   });

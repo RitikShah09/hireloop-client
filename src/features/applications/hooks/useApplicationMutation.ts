@@ -21,7 +21,7 @@ export const useApplyToJob = () => {
           }
         );
       }
-      // Paginated variants need full includes — invalidate only those
+
       qc.invalidateQueries({
         predicate: (query) => {
           const key = query.queryKey;
@@ -30,7 +30,7 @@ export const useApplyToJob = () => {
           return params !== undefined && 'page' in params;
         },
       });
-      // Update stats: total +1, pending +1
+
       qc.setQueryData(queryKeys.applications.stats, (old: ApiResponse<Stats> | undefined) => {
         if (!old?.data) return old;
         return {
@@ -53,7 +53,6 @@ export const useUpdateApplicationStatus = () => {
     onSuccess: (res, { id, status: newStatus }) => {
       const updatedApp = res.data.data as Application;
 
-      // Read old status before overwriting
       let oldStatus: string | undefined;
       const allLists = qc.getQueriesData<ApiResponse<Application[]>>({
         queryKey: ['applications', 'list'],
@@ -85,7 +84,6 @@ export const useUpdateApplicationStatus = () => {
         }
       );
 
-      // Adjust stats: decrement old bucket, increment new bucket
       if (oldStatus && oldStatus !== newStatus) {
         qc.setQueryData(queryKeys.applications.stats, (old: ApiResponse<Stats> | undefined) => {
           if (!old?.data) return old;

@@ -7,8 +7,8 @@ import api from '@/lib/axios';
 import toast from 'react-hot-toast';
 
 interface Props {
-  context: string; // what section this is for
-  currentValue: string; // current text content
+  context: string;
+  currentValue: string;
   onResult: (enhanced: string) => void;
   placeholder?: string;
 }
@@ -24,9 +24,9 @@ export const AIPromptBar = ({
   const { mutate: enhance, isPending } = useMutation({
     mutationFn: async () => {
       const res = await api.post('/resume-builder/enhance-section', {
-        section: context, // section name
-        context: currentValue, // current content
-        userPrompt: prompt, // user's instruction
+        section: context,
+        context: currentValue,
+        userPrompt: prompt,
       });
       return res.data.data as string;
     },

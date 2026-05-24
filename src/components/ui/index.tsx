@@ -3,7 +3,7 @@ export { Input, Textarea, Select, CustomSelect } from './Input';
 export { Card } from './Card';
 export { Badge } from './Badge';
 export { Avatar } from './Avatar';
-export { Skeleton, SkeletonCard } from './Skeleton';
+export { Skeleton } from './Skeleton';
 export { EmptyState } from './EmptyState';
 export { Divider } from './Divider';
 export { Modal, ConfirmDialog } from './Modal';
