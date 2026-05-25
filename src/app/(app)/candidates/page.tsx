@@ -434,7 +434,7 @@ export default function CandidatesPage() {
         />
       </div>
 
-      {!selectedJobId ? (
+      {!effectiveJobId ? (
         <EmptyState
           icon={<User size={36} />}
           title="Select a job to see its candidates"

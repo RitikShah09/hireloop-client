@@ -73,11 +73,6 @@ import {
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
-// ─── Hoisted form components ─────────────────────────────────────────────────
-// These MUST live at module scope. Defining components inside another component
-// creates a new identity on every render, causing React to remount them and
-// losing focus after each keystroke.
-
 const emptyCert = { name: '', issuer: '', issueDate: '', credentialUrl: '' };
 
 interface CertFormProps {
@@ -356,10 +351,6 @@ function MilestoneForm({
   );
 }
 
-// ─── Email verification card ──────────────────────────────────────────────────
-// Always rendered — shows verified badge OR the OTP flow so users who skipped
-// during registration can verify at any time from their profile.
-
 function EmailVerificationSection() {
   const { user } = useAppSelector((s) => s.auth);
   const dispatch = useAppDispatch();
@@ -491,8 +482,6 @@ function EmailVerificationSection() {
     </Card>
   );
 }
-
-// ─── Profile forms ────────────────────────────────────────────────────────────
 
 function CandidateProfileForm() {
   const { data, isPending: isLoadingProfile, isError, refetch } = useCandidateProfile();
@@ -1424,8 +1413,6 @@ function CompanyProfileForm() {
     </form>
   );
 }
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 type ProfileTab = 'profile' | 'experience' | 'education' | 'certifications' | 'milestones';
 

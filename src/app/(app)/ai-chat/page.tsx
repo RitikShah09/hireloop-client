@@ -117,7 +117,7 @@ export default function AIChatPage() {
 
       <Card padding="none" className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="flex-1 space-y-4 overflow-y-auto p-5">
-          {messages.length === 0 && selectedJobId && (
+          {messages.length === 0 && effectiveJobId && (
             <div className="py-8 text-center">
               <div className="bg-primary-light mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg">
                 <Bot size={24} className="text-primary" />
@@ -139,7 +139,7 @@ export default function AIChatPage() {
             </div>
           )}
 
-          {messages.length === 0 && !selectedJobId && (
+          {messages.length === 0 && !effectiveJobId && (
             <div className="py-12 text-center">
               <Sparkles size={32} className="text-muted-foreground mx-auto mb-3" />
               <p className="text-muted-foreground text-sm">
@@ -195,13 +195,13 @@ export default function AIChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-              placeholder={selectedJobId ? 'Ask about your candidates...' : 'Select a job first'}
-              disabled={!selectedJobId || isPending}
+              placeholder={effectiveJobId ? 'Ask about your candidates...' : 'Select a job first'}
+              disabled={!effectiveJobId || isPending}
               className="input flex-1 disabled:cursor-not-allowed disabled:opacity-50"
             />
             <button
               onClick={() => sendMessage()}
-              disabled={!input.trim() || !selectedJobId || isPending}
+              disabled={!input.trim() || !effectiveJobId || isPending}
               className="bg-primary text-primary-foreground hover:bg-primary-hover transition-micro rounded-lg p-2.5 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Send size={16} />
